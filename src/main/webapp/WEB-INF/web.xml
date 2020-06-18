@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<web-app
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+        version="3.0">
+
+    <display-name>ErgWallet</display-name>
+    <description>
+    </description>
+
+
+
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/notfound</location>
+    </error-page>
+
+    <servlet>
+        <servlet-name>CaptchaServlet</servlet-name>
+        <servlet-class>org.UrlWallet.CaptchaServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QRServlet</servlet-name>
+        <servlet-class>org.UrlWallet.QRServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RedirectServlet</servlet-name>
+        <jsp-file>/common/redirect.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>NotFoundServlet</servlet-name>
+        <jsp-file>/common/notfound.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RedirectServlet</servlet-name>
+        <url-pattern>/go/to</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CaptchaServlet</servlet-name>
+        <url-pattern>/captcha/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QRServlet</servlet-name>
+        <url-pattern>/qr/qr</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotFoundServlet</servlet-name>
+        <url-pattern>/common</url-pattern>
+        <url-pattern>/common/</url-pattern>
+        <url-pattern>/static</url-pattern>
+        <url-pattern>/static/</url-pattern>
+        <url-pattern>/notfound</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>WalletUrlServlet</servlet-name>
+        <jsp-file>/urlwallet/walletUrl.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>BalanceUrlServlet</servlet-name>
+        <jsp-file>/urlwallet/balanceUrl.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>RetrieveBoxServlet</servlet-name>
+        <jsp-file>/urlwallet/retrieveBox.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SendUrlServlet</servlet-name>
+        <jsp-file>/urlwallet/sendUrl.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SignUrlServlet</servlet-name>
+        <jsp-file>/urlwallet/signUrl.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>WalletKeyServlet</servlet-name>
+        <jsp-file>/keywallet/walletKey.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SendKeyServlet</servlet-name>
+        <jsp-file>/keywallet/sendKey.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SignKeyServlet</servlet-name>
+        <jsp-file>/keywallet/signKey.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>WalletUrlServlet</servlet-name>
+        <url-pattern>/wallet/*</url-pattern>
+        <url-pattern>/w/*</url-pattern>
+        <url-pattern>/wallet</url-pattern>
+        <url-pattern>/w</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SendUrlServlet</servlet-name>
+        <url-pattern>/sendurl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SignUrlServlet</servlet-name>
+        <url-pattern>/signurl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BalanceUrlServlet</servlet-name>
+        <url-pattern>/balanceurl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RetrieveBoxServlet</servlet-name>
+        <url-pattern>/retrievebox</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>WalletKeyServlet</servlet-name>
+        <url-pattern>/key/*</url-pattern>
+        <url-pattern>/k/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SendKeyServlet</servlet-name>
+        <url-pattern>/sendkey</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SignKeyServlet</servlet-name>
+        <url-pattern>/signkey</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>NotFoundServlet</servlet-name>
+        <url-pattern>/keywallet</url-pattern>
+        <url-pattern>/keywallet/</url-pattern>
+        <url-pattern>/urlwallet</url-pattern>
+        <url-pattern>/urlwallet/</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

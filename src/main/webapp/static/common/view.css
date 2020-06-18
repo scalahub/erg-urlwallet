@@ -1,0 +1,366 @@
+body
+{
+	font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+	font-size:small;
+    margin:8px 8px 8px;
+	background: black;
+    color: white;
+	zoom:1.75;
+}
+.balance {
+  text-align:center;
+}
+.balance span {
+    display:inline-block;
+    width:160px;
+    text-align:left;
+}
+.balance span:first-of-type {
+    text-align:right
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.clearfix {
+  overflow: auto;
+}
+
+.foot {
+	background: #00aa77;
+}
+
+img.long{
+    height:50%;
+    opacity:0.2;
+}
+
+img.long2{
+    opacity:0.8;
+}
+
+fieldset { 
+	padding: 0 15px 3em;
+	border: 0;
+}
+
+legend {
+	font-size: 1.4em;
+	font-weight: bold;
+	padding: .2em 5px;
+}
+
+	
+/*	wrapper divs */
+.custom-checkbox, .custom-radio { position: relative; }
+	
+/* input, label positioning */
+.custom-checkbox input, 
+.custom-radio input {
+	position: absolute;
+	left: 2px;
+	top: 3px;
+	margin: 0;
+	z-index: 0;
+}
+
+.custom-checkbox label, 
+.custom-radio label {
+	display: block;
+	position: relative;
+	z-index: 1;
+	font-size: 1.3em;
+	padding-right: 1em;
+	line-height: 1;
+	padding: .5em 0 .5em 30px;
+	margin: 0 0 .3em;
+	cursor: pointer;
+}
+
+	
+/* states */
+.custom-checkbox label { background: url(/static/common/checkbox.gif) no-repeat; }
+
+.custom-radio label { background: url(/static/common/radiobutton.gif) no-repeat; }
+
+.custom-checkbox label, .custom-radio label {
+	background-position: -10px -14px;
+}
+
+.custom-checkbox label.hover,
+.custom-checkbox label.focus,
+.custom-radio label.hover,
+.custom-radio label.focus {
+	background-position: -10px -114px;
+}
+
+.custom-checkbox label.checked, 
+.custom-radio label.checked {
+	background-position: -10px -214px;
+}
+
+.custom-checkbox label.checkedHover, 
+.custom-checkbox label.checkedFocus {
+	background-position: -10px -314px;
+}
+
+.custom-checkbox label.focus, 
+.custom-radio label.focus {
+	outline: 1px dotted #ccc;
+}
+
+#longheaderdefault{
+    background:#003333;     
+}
+#headerstuff{
+    border-style:none;
+}
+
+.myButton {
+    
+    -moz-box-shadow:inset 0px 1px 0px 0px #a6827e;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #a6827e;
+    box-shadow:inset 0px 1px 0px 0px #a6827e;
+    
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7d5d3b), color-stop(1, #634b30));
+    background:-moz-linear-gradient(top, #7d5d3b 5%, #634b30 100%);
+    background:-webkit-linear-gradient(top, #7d5d3b 5%, #634b30 100%);
+    background:-o-linear-gradient(top, #7d5d3b 5%, #634b30 100%);
+    background:-ms-linear-gradient(top, #7d5d3b 5%, #634b30 100%);
+    background:linear-gradient(to bottom, #7d5d3b 5%, #634b30 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#7d5d3b', endColorstr='#634b30',GradientType=0);
+    
+    background-color:#7d5d3b;
+    
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    
+    border:1px solid #54381e;
+    
+    display:inline-block;
+    color:#ffffff;
+    font-family:arial;
+    font-size:13px;
+    font-weight:normal;
+    padding:6px 24px;
+    text-decoration:none;
+    
+    text-shadow:0px 1px 0px #4d3534;
+    
+}
+.myButton:hover {
+    
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #634b30), color-stop(1, #7d5d3b));
+    background:-moz-linear-gradient(top, #634b30 5%, #7d5d3b 100%);
+    background:-webkit-linear-gradient(top, #634b30 5%, #7d5d3b 100%);
+    background:-o-linear-gradient(top, #634b30 5%, #7d5d3b 100%);
+    background:-ms-linear-gradient(top, #634b30 5%, #7d5d3b 100%);
+    background:linear-gradient(to bottom, #634b30 5%, #7d5d3b 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#634b30', endColorstr='#7d5d3b',GradientType=0);
+    
+    background-color:#634b30;
+}
+.myButton:active {
+    position:relative;
+    top:1px;
+}
+
+td.h0Default, th.h0Default {
+    background-color: Teal; color: white;
+}
+td.h1Default, th.h1Default {
+    background-color: Teal; color: white;
+}
+td.h0, th.h0 {
+    /* no gradiant */
+    /* background-color: Teal; color: white; */    
+    /* background-color: CadetBlue ; color: white; */
+
+    /* gradiant test */    
+    filter: progid:DYImageTransform.Microsoft.gradient(startColorstr='Teal', endColorstr='CadetBlue'); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(Teal), to(CadetBlue)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  Teal,  CadetBlue); /* for firefox 3.6+ */
+
+    
+    background: #999; /* for non-css3 browsers */
+    
+    /* Combo A */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
+
+    /* Combo B */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#cccccc'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#ccc)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #000,  #ccc); /* for firefox 3.6+ */
+    
+    /* combo 2 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#cccccc', GradientType=1); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#000), to(#ccc)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #000,  #ccc);
+   
+    /* combo 3 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000', GradientType=1); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#000)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ccc,  #000);
+
+    /* combo 1 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#cccccc'); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#ccc)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ccc,  #ccc);
+
+}
+td.h1, th.h1 {
+    background-color: CadetBlue ; color: white;
+    background: #999; /* for non-css3 browsers */
+    /* gradiant test */
+    background: -moz-linear-gradient(left,  CadetBlue,  Teal); /* for firefox 3.6+ */ 
+    
+    /* combo A */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
+
+    /* Combo B */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#cccccc'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#ccc)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #000,  #ccc); /* for firefox 3.6+ */
+    
+    /* combo 2 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000', GradientType=1); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#000)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ccc,  #000);
+
+    /* combo 3 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#cccccc', GradientType=1); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#000), to(#ccc)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #000,  #ccc);
+    /* combo 1 */    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000', GradientType=1); /* for IE */
+    background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#000)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ccc,  #000);
+
+}
+
+tr.d0 td {
+	background-color: #989898; color: white;
+}
+tr.d1 td {
+	/* background-color: LightCyan ; color: black; */
+	background-color: #DAF0FF ; color: black;
+}
+.crop {
+    width: 190px;
+    height: 190px;
+    overflow: hidden;
+	border-style:inset;
+	border-width:1px;
+	border-radius: 5px;
+}
+.crop img {
+    width: 180px;
+    height: 180px;
+    margin: -5px -5px -5px -5px;
+}
+
+#sendbox{
+    border-style:none;    
+    border-width:1px;    
+  
+}
+#feebox{
+    border-style:none;    
+    border-width:1px;
+	background:White;	
+    box-shadow: 5px 5px 10px #888888;	
+	border-radius: 5px    
+}
+#mainstuff{
+    border-style:none;
+    border-width:1px;
+    background:#F6F6F6;
+    color: Black;
+}
+#contactstuff{
+    border-style:none;
+    background:White;
+    font-size:60%;
+    color: Black;
+}
+#footerstuff{
+    border-style:none;
+    background:#CCFFFF;    
+}
+#postheader{
+    border-style:none;
+    background:#CCFFFF;    
+    color: black;
+}
+#errormessage{
+    background: black;    
+    color: white;
+}
+div.hide { 
+    display:none; 
+}
+div.show { 
+}
+
+input, textarea {   
+    padding: 5px;  
+    border: solid 1px #BBBBBB /*#E5E5E5;  */
+    outline: 0;  
+    font: normal 12px/100% Verdana, Tahoma, sans-serif;  
+    /*width: 200px;  */
+    background: #FFFFFF url('bg_form.png') left top repeat-x;  
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+    box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+}  
+      
+      
+input:hover, textarea:hover,  
+input:focus, textarea:focus {   
+        border-color: #000000; /* #C9C9C9;  */
+        -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;  
+}  
+      
+    
