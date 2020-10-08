@@ -3,7 +3,7 @@ package org.ErgUrlWallet
 import org.ErgUrlWallet.db.ScalaDB._
 import org.ErgUrlWallet.db.config.DBConfig
 import org.ErgUrlWallet.db.core.DataStructures._
-import org.ergoplatform.appkit.ErgoValue
+import org.ergoplatform.appkit.{ErgoValue, InputBox => AppkitInputBox}
 import org.ergoplatform.restapi.client.ErgoTransactionOutput
 import special.sigma.GroupElement
 
@@ -68,13 +68,13 @@ object SentCache {
     }
   }
 
-  def addTx(address:String, inputBoxIds: Array[String], changeBox: Option[(ErgOutputBox, ErgoTransactionOutput)]) = {
+  def addTx(address:String, inputBoxIds: Array[String], changeBox: Option[(ErgOutputBox, AppkitInputBox)]) = {
     val now = System.currentTimeMillis()
     inputBoxIds.foreach{inputBoxId =>
       Try(spentBoxTable.insert(address, inputBoxId, now))
     }
-    changeBox.foreach{
-      case (e:ErgOutputBox, a: ErgoTransactionOutput) =>
+    changeBox match{
+      case Some((e:ErgOutputBox, a: ErgoTransactionOutput)) =>
         Try(createdBoxTable.insert(address, a.getBoxId(), a.getValue, a.getErgoTree, a.getCreationHeight, now))
         e.regs.zipWithIndex.foreach{
           case (ergoValue: ErgoValue[_], index:Int) =>
@@ -86,6 +86,7 @@ object SentCache {
         e.tokens.zipWithIndex.foreach{case (token, index) =>
           Try(createdBoxTokensTable.insert(a.getBoxId, index, token.id, token.value))
         }
+      case _ =>
     }
   }
 }

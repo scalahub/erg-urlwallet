@@ -3,12 +3,13 @@ package org.ErgUrlWallet
 import org.ErgUrlWallet.utils.Client
 import org.UrlWallet._
 import org.apache.commons.codec.binary.Hex
-import org.ergoplatform.appkit.impl.{ErgoTreeContract, InputBoxImpl}
-import org.ergoplatform.appkit.{InputBox => _, _}
-import org.ergoplatform.restapi.client.ErgoTransactionOutput
-import org.ergoplatform.{ErgoAddressEncoder, appkit}
+import org.ergoplatform.appkit.impl.ErgoTreeContract
+import org.ergoplatform.appkit.{InputBox => AppkitInputBox, _}
+import org.ergoplatform.{ErgoAddress, ErgoAddressEncoder, appkit}
+
 import scala.{BigInt => ScalaBigInt}
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 object ErgUtil extends CoinUtil {
   lazy val decimals: Int = 9
@@ -24,6 +25,13 @@ object ErgUtil extends CoinUtil {
   val minValue:Long = 100000L
 
   val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
+
+  def getAddressFromString(address: String): Try[ErgoAddress] = {
+    Client.usingClient{ctx =>
+      val addressEncoder = new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
+      addressEncoder.fromString(address)
+    }
+  }
 
   override def isAddressValid(address: String): Boolean = {
     Client.usingClient{ctx =>
@@ -130,7 +138,9 @@ object ErgUtil extends CoinUtil {
       appkitInputBoxes.foreach(inputs.add)
       val allOutBoxes: Array[OutBox] = outBoxes ++ optChangeOutBox
 
-      val txBuilder: UnsignedTransactionBuilder = ctx.newTxBuilder().boxesToSpend(inputs).outputs(allOutBoxes: _*).fee(actualTxFee)
+      /// changeAddress
+
+      val txBuilder: UnsignedTransactionBuilder = ctx.newTxBuilder().boxesToSpend(inputs).outputs(allOutBoxes: _*).fee(actualTxFee).sendChangeTo(getAddressFromString(changeAddress).get)
       val txToSign: UnsignedTransaction = txBuilder.build()
 
       Client.usingClient{ctx =>
@@ -138,7 +148,7 @@ object ErgUtil extends CoinUtil {
         coinKeys.foreach{
           case ErgPrivateKey(bigInt) =>
             proverBuilder.withDLogSecret(bigInt.bigInteger)
-          case any => throw new Exception(s"Unsupported private key type: ${any.getClass.getCanonicalName}")
+          case any => throw new Exception(s"Unsupported private key type: ${any.getClass()}")
         }
         val prover = proverBuilder.build()
         val signedTx: SignedTransaction = prover.sign(txToSign)
@@ -146,11 +156,10 @@ object ErgUtil extends CoinUtil {
         ctx.sendTransaction(signedTx)
          println("pushingTx "+signedTx.toJson(false))
 
-        val ergoTransactionOutputs: Seq[ErgoTransactionOutput] = signedTx.getOutputsToSpend.asScala.map{ o =>
-          o.asInstanceOf[InputBoxImpl].getErgoTransactionOutput
-        }
-        val x: Option[(ErgOutputBox, ErgoTransactionOutput)] = optChangeErgOutputBox.map{ changeErgOutputBox =>
-          val changeErgoTransactionOutput = ergoTransactionOutputs(ergOutputBoxes.size)
+        val ergoTransactionOutputs = signedTx.getOutputsToSpend
+
+        val x: Option[(ErgOutputBox, AppkitInputBox)] = optChangeErgOutputBox.map{ changeErgOutputBox =>
+          val changeErgoTransactionOutput = ergoTransactionOutputs.get(ergOutputBoxes.length)
           (changeErgOutputBox, changeErgoTransactionOutput)
         }
         SentCache.addTx(changeAddress, ergInputBoxes.map(_.id), x)
@@ -168,3 +177,20 @@ object ErgUtil extends CoinUtil {
   }
 
 }
+
+/*
+      private def getBoxesToSpend(inputBoxes:Array[ErgInputBox], outputBoxes:Array[ErgOutputBox], fee:Long): Array[ErgInputBox] = {
+        val needed = outputBoxes.map(_.value).sum + fee
+        val sortedInputs = inputBoxes.sortBy(-_.amount)
+        var accumAmount:ScalaBigInt = 0
+        var accumBoxes:Array[ErgInputBox] = Array()
+        val accum: Array[(ScalaBigInt, Array[ErgInputBox])] = sortedInputs.map{ input =>
+          accumAmount += input.amount
+          accumBoxes +:= input
+          (accumAmount, accumBoxes)
+        }
+        accum.find{
+          case (amount, boxes) => amount >= needed
+        }.map(_._2).getOrElse(inputBoxes)
+      }
+ */

@@ -2,7 +2,9 @@ name := "erg-urlwallet"
 
 version := "0.1"
 
-lazy val appkit = RootProject(uri("git://github.com/scalahub/appkit-mod.git"))
+updateOptions := updateOptions.value.withLatestSnapshots(false)
+
+scalaVersion := "2.12.10"
 
 libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.3",
@@ -11,20 +13,20 @@ libraryDependencies ++= Seq(
       "net.glxn" % "qrgen" % "1.4",
       "io.circe" %% "circe-parser" % "0.13.0",
       "net.snaq" % "dbpool" % "7.0.1",
+      "org.ergoplatform" %% "ergo-appkit" % "3.3.2",
       "com.h2database" % "h2" % "1.4.199"
 )
 
+
 resolvers ++= Seq("Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/",
       "SonaType" at "https://oss.sonatype.org/content/groups/public",
-      "Typesafe maven releases" at "http://repo.typesafe.com/typesafe/maven-releases/",
+      ("Typesafe maven releases" at "http://repo.typesafe.com/typesafe/maven-releases/").withAllowInsecureProtocol(true),
       "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/")
 
-
 lazy val root = (project in file("."))
-    .dependsOn(appkit)
-    .settings(
-          updateOptions := updateOptions.value.withLatestSnapshots(false)
-    )
+  .settings(
+      updateOptions := updateOptions.value.withLatestSnapshots(false)
+   )
 
 enablePlugins(JettyPlugin)
 
