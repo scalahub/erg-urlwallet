@@ -134,7 +134,9 @@
             var addInput = document.getElementById('addInputCheckBox').checked;
 
             var allowTokenBurnData = '';
+            var optimizeInputsData = '';
             var allowTokenBurn = document.getElementById('allowTokenBurnCheckBox').checked;
+            var optimizeInputs = document.getElementById('optimizeInputsCheckBox').checked;
 
             if (secondAddr) {
                 var toaddr2 = form.address2.value.trim();
@@ -153,7 +155,12 @@
             } else {
                 allowTokenBurnData = '&allowTokenBurn='+escape("false")
             }
-            qstr = 'address='+escape(toaddr)+'&amt='+escape(amt)+'&token='+escape(token)+'&tokenid='+escape(tokenid)+'&secretData='+escape(secretData)+'&customFeeAmt='+escape(customFeeAmt)+'&csrf='+escape(csrf)+'&answer='+escape(answer)+secondAddrData+addInputData+allowTokenBurnData;
+            if (optimizeInputs) {
+                optimizeInputsData = '&optimizeInputs='+escape("true")
+            } else {
+                optimizeInputsData = '&optimizeInputs='+escape("false")
+            }
+            qstr = 'address='+escape(toaddr)+'&amt='+escape(amt)+'&token='+escape(token)+'&tokenid='+escape(tokenid)+'&secretData='+escape(secretData)+'&customFeeAmt='+escape(customFeeAmt)+'&csrf='+escape(csrf)+'&answer='+escape(answer)+secondAddrData+addInputData+allowTokenBurnData+optimizeInputsData;
             return qstr;
         }
 

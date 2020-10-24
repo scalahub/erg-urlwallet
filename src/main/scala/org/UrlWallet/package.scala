@@ -9,6 +9,17 @@ package object UrlWallet {
     val symbol:String // BTC/LTC/BTC, etc
     val name:String // Bitcoin etc
     val minValue:Long
+
+    /**
+     *
+     * @param address
+     * @param amount
+     * @param inputBoxes used only to compute the token Id of a new token (if needed)
+     * @param token
+     * @param tokenId
+     * @param copyRegsFromInput
+     * @return
+     */
     def getOutputBox(address:String, amount:BigInt, inputBoxes:Seq[InputBox], token:BigInt, tokenId:String, copyRegs:Option[InputBox]):OutputBox
     def isAddressValid(address:String):Boolean
     def getPrivateKey(walletImportFormat:String):CoinPrivateKey

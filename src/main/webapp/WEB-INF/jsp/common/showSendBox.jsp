@@ -23,8 +23,8 @@
                                         <tr>
                                             <td style="width: 160px;"><span class="MaxBox">How much?<br></span></td>
                                             <td>
-                                                <span class="MaxBox"><input id="amt" size="15" name="amt" type="text" width="100" value="0.1"> <%out.print(currencySymbol);%> &nbsp;
-                                                <input id="token" size="15" name="token" type="text" width="100" value="0">
+                                                <span class="MaxBox"><input id="amt" size="10" name="amt" type="text" width="100" value="0.1"> <%out.print(currencySymbol);%> &nbsp;
+                                                <input id="token" size="10" name="token" type="text" width="100" value="0">
                                                 <select id="tokenid" name="tokenid">
                                                     <option value="new" selected>new</option>
                                                 </select> token
@@ -32,8 +32,16 @@
                                             </td>
                                         </tr>
 										<tr>
-										    <td>
-										    </td>
+                                            <td>
+                                            <div class="feebox">
+                                                <div class="custom-checkbox" style="background-color:white;">
+                                                <small><small>
+                                                    <div class="custom-checkbox"><input type="checkbox" id="optimizeInputsCheckBox" name="optimizeInputs" value="optimizeInputs" checked><label for="optimizeInputsCheckBox" class="">Optimize Inputs</label></div>
+                                                </small></small>
+                                                </div>
+                                            </div>
+                                            </td>
+
 											<td>
 											<div class="feebox">
 												<div class="custom-checkbox" style="background-color:white;" >
@@ -66,8 +74,8 @@
 											</td>
                                             <td>
 												<div class="hide" id="secondSendBoxAmount">
-													<span class="MaxBox"><input id="amt2" size="15" name="amt2" type="text" width="100" value="0.1"> <%out.print(currencySymbol);%> &nbsp;
-													<input id="token2" size="15" name="token2" type="text" width="100" value="0">
+													<span class="MaxBox"><input id="amt2" size="10" name="amt2" type="text" width="100" value="0.1"> <%out.print(currencySymbol);%> &nbsp;
+													<input id="token2" size="10" name="token2" type="text" width="100" value="0">
                                                     <select id="tokenid2" name="tokenid2">
                                                         <option value="new" selected>new</option>
                                                     </select> token

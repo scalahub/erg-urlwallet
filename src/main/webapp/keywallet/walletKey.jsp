@@ -37,7 +37,7 @@ try {
         <% boolean showPrivateKey = false;%>
         <% boolean showSendBox = true;%>        
         <% boolean showSignBox = false;%>
-        <% boolean showQRBox = false;%>
+        <% boolean showQRBox = true;%>
 
         <% String postheader="/WEB-INF/jsp/urlwallet/postheader.jsp";%>
         <% boolean showPostHeader = true;%>        

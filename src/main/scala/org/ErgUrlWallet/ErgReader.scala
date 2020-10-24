@@ -12,7 +12,7 @@ object ErgReader extends CoinReader {
   private val unspentUrl = s"$baseUrl/api/v0/transactions/boxes/byAddress/unspent/"
   private val boxUrl = s"$baseUrl/transactions/boxes/"
 
-  override def getBoxById(boxId:String) = {
+  override def getBoxById(boxId: String) = {
     getUtxoBoxFromJson(Curl.get(boxUrl + boxId))
   }
 
@@ -21,13 +21,13 @@ object ErgReader extends CoinReader {
     val value = (j \\ "value").map(v => v.asNumber.get).apply(0)
     val creationHeight = (j \\ "creationHeight").map(v => v.asNumber.get).apply(0)
     val assets: Seq[Json] = (j \\ "assets").map(v => v.asArray.get).apply(0)
-    val tokens: Seq[ErgToken] = assets.map{ asset =>
+    val tokens: Seq[ErgToken] = assets.map { asset =>
       val tokenID = (asset \\ "tokenId").map(v => v.asString.get).apply(0)
       val value = (asset \\ "amount").map(v => v.asNumber.get).apply(0).toLong.get
       ErgToken(tokenID, value)
     }
-    val registers = (j \\ "additionalRegisters").flatMap{r =>
-      r.asObject.get.toList.map{
+    val registers = (j \\ "additionalRegisters").flatMap { r =>
+      r.asObject.get.toList.map {
         case (key, value) => (key, value.asString.get)
       }
     }.toMap
@@ -38,15 +38,14 @@ object ErgReader extends CoinReader {
     ErgInputBox(id, value.toLong.get, registers, ergoTree, tokens, creationHeight.toInt.get, address, spendingTxId)
   }
 
-  private def getId(j:Json) = (j \\ "id").map(v => v.asString.get).apply(0)
+  private def getId(j: Json) = (j \\ "id").map(v => v.asString.get).apply(0)
 
-  private def getUtxoBoxesFromJson(json:Json): Seq[ErgInputBox] = {
+  private def getUtxoBoxesFromJson(json: Json): Seq[ErgInputBox] = {
     json.asArray.get.map(getUtxoBoxFromJson)
   }
 
-  override def getUnspentBoxes(address:String): (Array[InputBox], ErgReader.IsConfirmed) = {
+  override def getUnspentBoxes(address: String): (Array[InputBox], ErgReader.IsConfirmed) = {
     val spentBoxIdsFromMemory: Seq[String] = SentCache.getSpentBoxIds(address)
-
     val receivedBoxesFromMemory: Set[ErgInputBox] = SentCache.getReceivedBoxes(address).toSet // don't count received boxes for now
     val receivedBoxesFromExplorer: Set[ErgInputBox] = getUtxoBoxesFromJson(Curl.get(unspentUrl + address)).toSet
 
@@ -59,7 +58,7 @@ object ErgReader extends CoinReader {
 
     val allReceivedBoxes: Set[ErgInputBox] = receivedBoxesFromExplorer ++ receivedBoxesFromMemory
 
-    val unspentBoxes: Set[ErgInputBox] = unspentIds.map{ unspentId =>
+    val unspentBoxes: Set[ErgInputBox] = unspentIds.map { unspentId =>
       allReceivedBoxes.find(_.id == unspentId).get
     }
 
