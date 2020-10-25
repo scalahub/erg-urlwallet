@@ -10,10 +10,10 @@
                                                                                         Pay mining fee of:
                                                                                     </td>
                                                                                     <td>
-                                                                                        <input size="10" width="10" id="customFeeAmt" name="customFeeAmt" value="<%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(fee));%>" type="text"> <%out.print(currencySymbol);%></label>
+                                                                                        <input size="10" width="10" id="customFeeAmt" name="customFeeAmt" value="<%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>" type="text"> <%out.print(currencySymbol);%></label>
                                                                                     </td>
                                                                                     <td>
-                                                                                        &nbsp; (min fee <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(fee));%>)
+                                                                                        &nbsp; (min fee <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>)
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>

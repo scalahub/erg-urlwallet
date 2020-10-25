@@ -15,13 +15,15 @@ object ErgUtil extends CoinUtil {
 
   lazy val formatUtil = new FormatUtil(decimals)
 
-  lazy val minFee: Long = 1500000L
+  lazy val minFee: Long = 1000000L
 
   lazy val symbol: String = "ERG"
 
   lazy val name: String = "Ergo"
 
-  val minValue: Long = 100000L
+  lazy val minAmt: Long = 1000000L
+
+  lazy val defaultAmt: Long = 1000000L
 
   val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
 
@@ -172,15 +174,15 @@ object ErgUtil extends CoinUtil {
         val signedTx: SignedTransaction = prover.sign(txToSign)
 
         ctx.sendTransaction(signedTx)
-        println("pushingTx " + signedTx.toJson(false))
+        println("pushingTx " + signedTx.getId)
 
-        val ergoTransactionOutputs = signedTx.getOutputsToSpend
+        val ergoTransactionOutputs: java.util.List[org.ergoplatform.appkit.InputBox] = signedTx.getOutputsToSpend
 
         val x: Option[(ErgOutputBox, AppkitInputBox)] = optChangeErgOutputBox.map { changeErgOutputBox =>
-          val changeErgoTransactionOutput = ergoTransactionOutputs.get(ergOutputBoxes.length)
+          val changeErgoTransactionOutput: org.ergoplatform.appkit.InputBox = ergoTransactionOutputs.get(ergOutputBoxes.length)
           (changeErgOutputBox, changeErgoTransactionOutput)
         }
-        SentCache.addTx(changeAddress, ergInputBoxes.map(_.id), x)
+        SentCache.addTx(changeAddress, ergInputBoxes.map(_.id), ctx.getHeight, x)
         ErgSignedTx(signedTx)
       }
     }

@@ -32,10 +32,9 @@ object ErgReader extends CoinReader {
       }
     }.toMap
 
-    val ergoTree = (j \\ "ergoTree").map(v => v.asString.get).apply(0)
     val address = (j \\ "address").map(v => v.asString.get).apply(0)
     val spendingTxId = (j \\ "spentTransactionId").map(v => v.asString).apply(0)
-    ErgInputBox(id, value.toLong.get, registers, ergoTree, tokens, creationHeight.toInt.get, address, spendingTxId)
+    ErgInputBox(id, value.toLong.get, registers, tokens, creationHeight.toInt.get, address, spendingTxId)
   }
 
   private def getId(j: Json) = (j \\ "id").map(v => v.asString.get).apply(0)
@@ -47,6 +46,7 @@ object ErgReader extends CoinReader {
   override def getUnspentBoxes(address: String): (Array[InputBox], ErgReader.IsConfirmed) = {
     val spentBoxIdsFromMemory: Seq[String] = SentCache.getSpentBoxIds(address)
     val receivedBoxesFromMemory: Set[ErgInputBox] = SentCache.getReceivedBoxes(address).toSet // don't count received boxes for now
+
     val receivedBoxesFromExplorer: Set[ErgInputBox] = getUtxoBoxesFromJson(Curl.get(unspentUrl + address)).toSet
 
     val explorerIds: Set[String] = receivedBoxesFromExplorer.map(_.id)

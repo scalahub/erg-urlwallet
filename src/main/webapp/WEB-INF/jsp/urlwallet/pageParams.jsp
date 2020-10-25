@@ -14,7 +14,9 @@
             response.sendRedirect(fullUrl(request, urlPattern)); 
             return;
         } 
-        long fee = org.UrlWallet.Wallet.coinUtil().minFee();
+        long minFee = org.UrlWallet.Wallet.coinUtil().minFee();
+        long minAmt = org.UrlWallet.Wallet.coinUtil().minAmt();
+        long defaultAmt = org.UrlWallet.Wallet.coinUtil().defaultAmt();
 
 	
 %>
