@@ -35,7 +35,7 @@
 
             var answer = form.answer.value;
 
-            var customFeeAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(fee));%>;
+            var customFeeAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>;
             if (form.customFeeAmt === undefined) {
                 // do nothing
             } else {
@@ -63,18 +63,19 @@
                  copyTo = form.copyTo.value.trim();
             }
 
-            var minFeeOrAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(fee));%>;
+            var minFee = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>;
+            var minAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minAmt));%>;
 
             if (toaddr == '') {
                 result = 'To address cannot be empty';
-            } else if (customFeeAmt < minFeeOrAmt) {
-                result = 'Min fee is '+minFeeOrAmt;
+            } else if (customFeeAmt < minFee) {
+                result = 'Min fee is '+minFee;
             } else if (amt == '') {
                 result = 'Amount cannot be empty';
             } else if (isNaN(amt)) {
                 result = 'Amount must be a number';
-            } else if (parseFloat(amt) < minFeeOrAmt) {
-                result = 'Amount must be >= '+minFeeOrAmt ;
+            } else if (parseFloat(amt) < minAmt) {
+                result = 'Amount must be >= '+minAmt ;
             } else if (token == '') {
                 result = 'Token cannot be empty (set to 0 for none)';
             } else if (isNaN(token)) {
@@ -88,8 +89,8 @@
                     result = '2nd amount cannot be empty';
                 } else if (isNaN(amt2)) {
                     result = '2nd amount must be a number';
-                } else if (parseFloat(amt2) < minFeeOrAmt) {
-                    result = '2nd amount must >= '+minFeeOrAmt ;
+                } else if (parseFloat(amt2) < minAmt) {
+                    result = '2nd amount must >= '+minAmt ;
                 } else if (token2 == '') {
                     result = '2nd token cannot be empty (set to 0 for none)';
                 } else if (isNaN(token2)) {
@@ -121,7 +122,7 @@
             var token = form.token.value.trim();
             var tokenid = form.tokenid.value.trim();
 
-            var customFeeAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(fee));%>;
+            var customFeeAmt = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>;
             if (form.customFeeAmt === undefined) {
                 // do nothing
             } else {
@@ -134,7 +135,9 @@
             var addInput = document.getElementById('addInputCheckBox').checked;
 
             var allowTokenBurnData = '';
+            var optimizeInputsData = '';
             var allowTokenBurn = document.getElementById('allowTokenBurnCheckBox').checked;
+            var optimizeInputs = document.getElementById('optimizeInputsCheckBox').checked;
 
             if (secondAddr) {
                 var toaddr2 = form.address2.value.trim();
@@ -153,7 +156,12 @@
             } else {
                 allowTokenBurnData = '&allowTokenBurn='+escape("false")
             }
-            qstr = 'address='+escape(toaddr)+'&amt='+escape(amt)+'&token='+escape(token)+'&tokenid='+escape(tokenid)+'&secretData='+escape(secretData)+'&customFeeAmt='+escape(customFeeAmt)+'&csrf='+escape(csrf)+'&answer='+escape(answer)+secondAddrData+addInputData+allowTokenBurnData;
+            if (optimizeInputs) {
+                optimizeInputsData = '&optimizeInputs='+escape("true")
+            } else {
+                optimizeInputsData = '&optimizeInputs='+escape("false")
+            }
+            qstr = 'address='+escape(toaddr)+'&amt='+escape(amt)+'&token='+escape(token)+'&tokenid='+escape(tokenid)+'&secretData='+escape(secretData)+'&customFeeAmt='+escape(customFeeAmt)+'&csrf='+escape(csrf)+'&answer='+escape(answer)+secondAddrData+addInputData+allowTokenBurnData+optimizeInputsData;
             return qstr;
         }
 

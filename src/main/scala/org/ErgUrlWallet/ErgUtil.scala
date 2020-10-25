@@ -8,7 +8,6 @@ import org.ergoplatform.appkit.{InputBox => AppkitInputBox, _}
 import org.ergoplatform.{ErgoAddress, ErgoAddressEncoder, appkit}
 
 import scala.{BigInt => ScalaBigInt}
-import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 object ErgUtil extends CoinUtil {
@@ -16,44 +15,48 @@ object ErgUtil extends CoinUtil {
 
   lazy val formatUtil = new FormatUtil(decimals)
 
-  lazy val minFee: Long = 1500000L
+  lazy val minFee: Long = 1000000L
 
   lazy val symbol: String = "ERG"
 
   lazy val name: String = "Ergo"
 
-  val minValue:Long = 100000L
+  lazy val minAmt: Long = 1000000L
+
+  lazy val defaultAmt: Long = 1000000L
 
   val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
 
   def getAddressFromString(address: String): Try[ErgoAddress] = {
-    Client.usingClient{ctx =>
+    Client.usingClient { ctx =>
       val addressEncoder = new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       addressEncoder.fromString(address)
     }
   }
 
   override def isAddressValid(address: String): Boolean = {
-    Client.usingClient{ctx =>
+    Client.usingClient { ctx =>
       val addressEncoder = new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       try {
         addressEncoder.fromString(address).get.script
         true
       } catch {
-        case e:Throwable => false
+        case e: Throwable => false
       }
     }
   }
 
-  override def getOutputBox(address: String, amount: BigInt, inputBoxes: Seq[InputBox], token: BigInt, tokenId:String, copyRegsFromInput:Option[InputBox]): ErgOutputBox = {
+  override def getOutputBox(address: String, amount: BigInt, inputBoxes: Seq[InputBox], token: BigInt, tokenId: String, copyRegsFromInput: Option[InputBox]): ErgOutputBox = {
 
-    val registers: Seq[ErgoValue[_]] = copyRegsFromInput.map{
-      case e:ErgInputBox => e.getRegistersAsSeq
-      case any => throw new Exception(s"Unknown InputBox type ${any.getClass.getCanonicalName}")
-    }.getOrElse(Nil)
+    val registers: Seq[ErgoValue[_]] = copyRegsFromInput
+      .map {
+        case e: ErgInputBox => e.getRegistersAsSeq
+        case any            => throw new Exception(s"Unknown InputBox type ${any.getClass.getCanonicalName}")
+      }
+      .getOrElse(Nil)
 
     val tokens: Seq[ErgToken] = if (token > 0) {
-      def ergInputBox:ErgInputBox = inputBoxes(0).asInstanceOf[ErgInputBox]
+      def ergInputBox: ErgInputBox = inputBoxes(0).asInstanceOf[ErgInputBox]
       val actualTokenId = if (tokenId == "new") ergInputBox.id else tokenId
       Seq(ErgToken(actualTokenId, token))
     } else Nil
@@ -64,7 +67,7 @@ object ErgUtil extends CoinUtil {
 
   override def getKeyFromInt(bigInt: ScalaBigInt): ErgPrivateKey = ErgPrivateKey(bigInt)
 
-  override def sendTx(inputBoxes: Array[InputBox], outputBoxes: Array[OutputBox], txFee:Long, changeAddress:String, allowTokenBurn:Boolean, coinKeys: Array[CoinPrivateKey]): CoinSignedTx = {
+  override def sendTx(inputBoxes: Array[InputBox], outputBoxes: Array[OutputBox], txFee: Long, changeAddress: String, allowTokenBurn: Boolean, coinKeys: Array[CoinPrivateKey]): CoinSignedTx = {
     if (inputBoxes.isEmpty) throw new Exception("No funds available")
     Client.usingClient { implicit ctx =>
       val txB = ctx.newTxBuilder()
@@ -74,19 +77,19 @@ object ErgUtil extends CoinUtil {
         val ErgOutputBox(address, regs, value, tokens) = ergOutputBox
         val contract = new ErgoTreeContract(addressEncoder.fromString(address).get.script)
         val outBoxBuilder = outBoxBuilderWithTokens(txB.outBoxBuilder().value(value.toLong).contract(contract))(tokens)
-        (if (regs.isEmpty) outBoxBuilder else outBoxBuilder.registers(regs:_*)).build()
+        (if (regs.isEmpty) outBoxBuilder else outBoxBuilder.registers(regs: _*)).build()
       }
 
-      val ergOutputBoxes:Array[ErgOutputBox] = outputBoxes.map{
-        case ergOutputBox:ErgOutputBox => ergOutputBox
-        case any => throw new Exception(s"Unsupported output box type: ${any.getClass.getCanonicalName}")
+      val ergOutputBoxes: Array[ErgOutputBox] = outputBoxes.map {
+        case ergOutputBox: ErgOutputBox => ergOutputBox
+        case any                        => throw new Exception(s"Unsupported output box type: ${any.getClass.getCanonicalName}")
       }
 
       val outBoxes: Array[OutBox] = ergOutputBoxes.map(getOutBoxFromErgOutBox)
 
-      val ergInputBoxes: Array[ErgInputBox] = inputBoxes.map{
-        case ergoInputBox:ErgInputBox => ergoInputBox
-        case any => throw new Exception(s"Unsupported input box type: ${any.getClass.getCanonicalName}")
+      val ergInputBoxes: Array[ErgInputBox] = inputBoxes.map {
+        case ergoInputBox: ErgInputBox => ergoInputBox
+        case any                       => throw new Exception(s"Unsupported input box type: ${any.getClass.getCanonicalName}")
       }
 
       val totalIn = ergInputBoxes.map(_.amount).sum
@@ -97,36 +100,52 @@ object ErgUtil extends CoinUtil {
 
       // token validation
       val newTokenId = ergInputBoxes(0).id
-      val outTokens: Seq[ErgToken] = ergOutputBoxes.flatMap(_.tokens).filterNot(_.id == newTokenId).groupBy(_.id).map{
-        case (id, array) => ErgToken(id, array.map(_.value).sum)
-      }.toSeq
+      val outTokens: Seq[ErgToken] = ergOutputBoxes
+        .flatMap(_.tokens)
+        .filterNot(_.id == newTokenId)
+        .groupBy(_.id)
+        .map {
+          case (id, array) => ErgToken(id, array.map(_.value).sum)
+        }
+        .toSeq
 
-      val inTokens: Seq[ErgToken] = ergInputBoxes.flatMap(_.tokens).groupBy(_.id).map{
-        case (id, array) => ErgToken(id, array.map(_.value).sum)
-      }.toSeq
+      val inTokens: Seq[ErgToken] = ergInputBoxes
+        .flatMap(_.tokens)
+        .groupBy(_.id)
+        .map {
+          case (id, array) => ErgToken(id, array.map(_.value).sum)
+        }
+        .toSeq
 
       // first require that outTokens is a subset of inTokens
-      outTokens.foreach{outToken =>
+      outTokens.foreach { outToken =>
         inTokens.find(_.id == outToken.id) match {
           case Some(inToken) if inToken.value >= outToken.value => // ok
-          case Some(_) => throw new Exception(s"Insufficient tokens with id ${outToken.id}")
-          case _ => throw new Exception(s"No tokens with id ${outToken.id}")
+          case Some(_)                                          => throw new Exception(s"Insufficient tokens with id ${outToken.id}")
+          case _                                                => throw new Exception(s"No tokens with id ${outToken.id}")
         }
       }
 
       // then put balance tokens in change
-      val changeTokens: Seq[ErgToken] = inTokens.map{ inToken =>
-        val balance: BigInt = outTokens.find(_.id == inToken.id).map{ outToken =>
-          inToken.value - outToken.value
-        }.getOrElse(inToken.value)
-        ErgToken(inToken.id, balance)
-      }.filter(_.value > 0)
+      val changeTokens: Seq[ErgToken] = inTokens
+        .map { inToken =>
+          val balance: BigInt = outTokens
+            .find(_.id == inToken.id)
+            .map { outToken =>
+              inToken.value - outToken.value
+            }
+            .getOrElse(inToken.value)
+          ErgToken(inToken.id, balance)
+        }
+        .filter(_.value > 0)
 
-      val (actualChange, actualTxFee):(BigInt, Long) = if (change < minFee) (0, txFee + change.toLong) else (change, txFee)
+      val (actualChange, actualTxFee): (BigInt, Long) = if (change < minFee) (0, txFee + change.toLong) else (change, txFee)
 
       if (!allowTokenBurn && changeTokens.nonEmpty && actualChange == 0) throw new Exception("This transaction causes token burn")
 
-      val (optChangeOutBox, optChangeErgOutputBox):(Option[OutBox], Option[ErgOutputBox]) = if (actualChange > 0) {
+      val toBurn: Seq[ErgoToken] = if (allowTokenBurn && changeTokens.nonEmpty && actualChange == 0) changeTokens.map(changeToken => new ErgoToken(changeToken.id, changeToken.value.toLong)) else Nil
+
+      val (optChangeOutBox, optChangeErgOutputBox): (Option[OutBox], Option[ErgOutputBox]) = if (actualChange > 0) {
         val ergOutBox = ErgOutputBox(changeAddress, Nil, change, changeTokens)
         (Some(getOutBoxFromErgOutBox(ergOutBox)), Some(ergOutBox))
       } else (None, None)
@@ -140,12 +159,13 @@ object ErgUtil extends CoinUtil {
 
       /// changeAddress
 
-      val txBuilder: UnsignedTransactionBuilder = ctx.newTxBuilder().boxesToSpend(inputs).outputs(allOutBoxes: _*).fee(actualTxFee).sendChangeTo(getAddressFromString(changeAddress).get)
+      val txBuilder: UnsignedTransactionBuilder =
+        ctx.newTxBuilder().boxesToSpend(inputs).outputs(allOutBoxes: _*).fee(actualTxFee).sendChangeTo(getAddressFromString(changeAddress).get).tokensToBurn(toBurn: _*)
       val txToSign: UnsignedTransaction = txBuilder.build()
 
-      Client.usingClient{ctx =>
+      Client.usingClient { ctx =>
         val proverBuilder = ctx.newProverBuilder()
-        coinKeys.foreach{
+        coinKeys.foreach {
           case ErgPrivateKey(bigInt) =>
             proverBuilder.withDLogSecret(bigInt.bigInteger)
           case any => throw new Exception(s"Unsupported private key type: ${any.getClass()}")
@@ -154,22 +174,23 @@ object ErgUtil extends CoinUtil {
         val signedTx: SignedTransaction = prover.sign(txToSign)
 
         ctx.sendTransaction(signedTx)
-         println("pushingTx "+signedTx.toJson(false))
+        println("pushingTx " + signedTx.getId)
 
-        val ergoTransactionOutputs = signedTx.getOutputsToSpend
+        val ergoTransactionOutputs: java.util.List[org.ergoplatform.appkit.InputBox] = signedTx.getOutputsToSpend
 
-        val x: Option[(ErgOutputBox, AppkitInputBox)] = optChangeErgOutputBox.map{ changeErgOutputBox =>
-          val changeErgoTransactionOutput = ergoTransactionOutputs.get(ergOutputBoxes.length)
+        val x: Option[(ErgOutputBox, AppkitInputBox)] = optChangeErgOutputBox.map { changeErgOutputBox =>
+          val changeErgoTransactionOutput: org.ergoplatform.appkit.InputBox = ergoTransactionOutputs.get(ergOutputBoxes.length)
           (changeErgOutputBox, changeErgoTransactionOutput)
         }
-        SentCache.addTx(changeAddress, ergInputBoxes.map(_.id), x)
+        SentCache.addTx(changeAddress, ergInputBoxes.map(_.id), ctx.getHeight, x)
         ErgSignedTx(signedTx)
       }
     }
   }
 
-  def outBoxBuilderWithTokens(outBoxBuilder: OutBoxBuilder)(tokens:Seq[ErgToken]) = {
-    if (tokens.isEmpty) outBoxBuilder else {
+  def outBoxBuilderWithTokens(outBoxBuilder: OutBoxBuilder)(tokens: Seq[ErgToken]) = {
+    if (tokens.isEmpty) outBoxBuilder
+    else {
       outBoxBuilder.tokens(
         tokens.map(token => token.toErgoToken): _*
       )
@@ -177,20 +198,3 @@ object ErgUtil extends CoinUtil {
   }
 
 }
-
-/*
-      private def getBoxesToSpend(inputBoxes:Array[ErgInputBox], outputBoxes:Array[ErgOutputBox], fee:Long): Array[ErgInputBox] = {
-        val needed = outputBoxes.map(_.value).sum + fee
-        val sortedInputs = inputBoxes.sortBy(-_.amount)
-        var accumAmount:ScalaBigInt = 0
-        var accumBoxes:Array[ErgInputBox] = Array()
-        val accum: Array[(ScalaBigInt, Array[ErgInputBox])] = sortedInputs.map{ input =>
-          accumAmount += input.amount
-          accumBoxes +:= input
-          (accumAmount, accumBoxes)
-        }
-        accum.find{
-          case (amount, boxes) => amount >= needed
-        }.map(_._2).getOrElse(inputBoxes)
-      }
- */
