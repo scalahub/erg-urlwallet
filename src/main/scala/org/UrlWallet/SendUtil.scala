@@ -1,4 +1,5 @@
 package org.UrlWallet
+import scala.collection.immutable
 
 class SendUtil(
     coinReader: CoinReader,
@@ -57,7 +58,8 @@ class SendUtil(
       additionalBoxId: Option[String],
       copyRegistersTo: Option[Int],
       allowTokenBurn: Boolean,
-      optimizeInputs: Boolean
+      optimizeInputs: Boolean,
+      indexOfAdditionalInput: Option[Int]
   ) =
     try {
       val txFeeLong = txFee.toLong
@@ -117,7 +119,13 @@ class SendUtil(
           selectInputs(inputs, additionalInput, amounts.sum + txFeeLong, tokens)
         else inputs
 
-      val allInputs: Array[InputBox] = selected ++ additionalInput
+      val allInputs = {
+        indexOfAdditionalInput match {
+          case Some(0) => additionalInput.toSeq ++ selected
+          case Some(1) => Seq(selected.head) ++ additionalInput ++ selected.tail
+          case _       => selected.toSeq ++ additionalInput
+        }
+      }
 
       val outputBoxes: Array[OutputBox] =
         recipientAddressesAmountsCopyFrom.map {
@@ -136,7 +144,7 @@ class SendUtil(
 
       val txHash = makeTxAndSend(
         key,
-        allInputs,
+        allInputs.toArray,
         outputBoxes,
         txFeeLong,
         myAddress,
@@ -150,7 +158,7 @@ class SendUtil(
         // e.printStackTrace
         val message =
           if (e.getMessage.startsWith("Cost of transaction"))
-            "Please check \"Optimize Inputs\" and retry"
+            "Please check \"Optimize Inputs\" and retry. If already checked then try reducing the amount"
           else e.getMessage
         throw new Exception(message)
     }

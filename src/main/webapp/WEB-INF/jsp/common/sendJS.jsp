@@ -57,10 +57,12 @@
 
             var inputBoxId = '';
             var copyTo = '';
+            var inputBoxIndex = '';
 
             if (addInput) {
                  inputBoxId = form.inputBoxId.value.trim();
                  copyTo = form.copyTo.value.trim();
+                 inputBoxIndex = form.inputBoxIndex.value.trim();
             }
 
             var minFee = <%out.print(org.UrlWallet.Wallet.formatUtil().formatLongNumber(minFee));%>;
@@ -107,6 +109,9 @@
                         result = 'Second output must be defined for copying registers';
                     }
                 }
+                if (inputBoxIndex === '') {
+                    result = 'inputBoxIndex must be defined';
+                }
             }
             return result;
         }
@@ -149,7 +154,8 @@
             if (addInput) {
                 var inputBoxId = form.inputBoxId.value.trim();
                 var copyTo = form.copyTo.value.trim();
-                addInputData = '&inputBoxId='+escape(inputBoxId)+'&copyTo='+escape(copyTo);
+                var inputBoxIndex = form.inputBoxIndex.value.trim();
+                addInputData = '&inputBoxId='+escape(inputBoxId)+'&copyTo='+escape(copyTo)+'&inputBoxIndex='+escape(inputBoxIndex);
             }
             if (allowTokenBurn) {
                 allowTokenBurnData = '&allowTokenBurn='+escape("true")
@@ -207,6 +213,8 @@
 	    function hideAddInputClicked() {
 	    	hide('inputBoxText');
 	    	hide('inputBoxRegistersText');
+	    	hide('inputBoxIndexText');
+	    	hide('inputBoxIndex');
 	    	hide('inputBoxRetrievedResult');
 	    	hide('inputBoxRegisters');
 	    	hide('inputBox');
@@ -214,6 +222,8 @@
 	    function showAddInputClicked() {
 	    	show('inputBoxText');
 	    	show('inputBoxRegistersText');
+	    	show('inputBoxIndexText');
+	    	show('inputBoxIndex');
 	    	show('inputBoxRetrievedResult');
 	    	show('inputBoxRegisters');
 	    	show('inputBox');

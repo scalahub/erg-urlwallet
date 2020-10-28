@@ -128,9 +128,26 @@
                                                 <div class="hide" id="inputBoxRegisters">
                                                     <select id="copyTo" name="copyTo">
                                                       <option value="no">no</option>
-                                                      <option value="first">first</option>
-                                                      <option value="second" selected>second</option>
+                                                      <option value="first" selected>first</option>
+                                                      <option value="second">second</option>
                                                     </select> output
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 160px;">
+                                                <div class="hide" id="inputBoxIndexText">
+                                                    <span class="MaxBox">Index of this box</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="hide" id="inputBoxIndex">
+                                                    <select id="indexOf" name="inputBoxIndex">
+	                           					      <option value="any">any</option>
+                                                      <option value="first" selected>first</option>
+                                                      <option value="second">second</option>
+                                                      <option value="last">last</option>
+                                                    </select>
                                                 </div>
                                             </td>
                                         </tr>

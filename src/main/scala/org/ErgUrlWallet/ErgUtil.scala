@@ -43,7 +43,9 @@ object ErgUtil extends CoinUtil {
         addressEncoder.fromString(address).get.script
         true
       } catch {
-        case e: Throwable => false
+        case e: Throwable =>
+          e.printStackTrace
+          false
       }
     }
   }

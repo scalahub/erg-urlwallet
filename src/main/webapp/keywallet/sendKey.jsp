@@ -23,6 +23,7 @@
 
 	String inputBoxId = request.getParameter("inputBoxId");
 	String copyTo = request.getParameter("copyTo");
+	String inputBoxIndex = request.getParameter("inputBoxIndex");
 
 	boolean allowTokenBurn = Boolean.parseBoolean(request.getParameter("allowTokenBurn"));
 	boolean optimizeInputs = Boolean.parseBoolean(request.getParameter("optimizeInputs"));
@@ -44,7 +45,7 @@
 		tokenIdsToSend = new String[]{tokenIdToSend, tokenId2ToSend};
 	}
 
-    msg=org.UrlWallet.Wallet.keyWallet().processSend(wifKey, addressesToSend, amtsToSend, tokensToSend, tokenIdsToSend, fee, inputBoxId, copyTo, allowTokenBurn, optimizeInputs);
+    msg=org.UrlWallet.Wallet.keyWallet().processSend(wifKey, addressesToSend, amtsToSend, tokensToSend, tokenIdsToSend, fee, inputBoxId, copyTo, allowTokenBurn, optimizeInputs,inputBoxIndex);
    } catch(Exception e) {
        e.printStackTrace();
 	   msg = "Error: "+e.getMessage();
