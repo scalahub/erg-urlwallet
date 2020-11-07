@@ -173,31 +173,76 @@ class SendUtil(
     // 1. minimum number of inputs
     // 2. ergs from inputBoxes
     // 3. tokens from inputBoxes and additionalInput
-    //
-    //    val tokensNeeded: Map[String, BigInt] = tokens.filter(_._2 > 0).groupBy(_._1).map{
-    //      case (tokenId, amounts) => tokenId -> amounts.map(_._2).sum
-    //    }.map{
-    //      case (tokenId, amount) if additionalInput.exists(box => box.tokens.exists(_.id == tokenId)) =>
-    //        (tokenId, amount - additionalInput.get.tokens.find(_.id == tokenId).get.value)
-    //      case (tokenId, amount) => (tokenId, amount)
-    //    }.filter(_._2 > 0).toMap
-    //    val boxesWithTokens = inputBoxes.filter(inputBox => inputBox.tokens.exists(token => tokensNeeded.contains(token.id)))
-    //    val amountNeeded = amountTotal - additionalInput.map(_.amount).sum
 
-    val sortedInputs = inputBoxes.sortBy(-_.amount)
-    var accumAmount: BigInt = 0
-    var accumBoxes: Array[InputBox] = Array()
-    val accum = sortedInputs.map { input =>
-      accumAmount += input.amount
-      accumBoxes +:= input
-      (accumAmount, accumBoxes)
-    }
-    accum
-      .find {
-        case (amount, _) => amount >= amountTotal
+    val tokensNeeded: Map[String, BigInt] = tokens
+      .filter(_._2 > 0)
+      .groupBy(_._1)
+      .map {
+        case (tokenId, amounts) => tokenId -> amounts.map(_._2).sum
       }
-      .map(_._2)
-      .getOrElse(inputBoxes)
+      .map {
+        case (tokenId, amount)
+            if additionalInput
+              .exists(box => box.tokens.exists(_.id == tokenId)) =>
+          (
+            tokenId,
+            amount - additionalInput.get.tokens.find(_.id == tokenId).get.value
+          )
+        case (tokenId, amount) => (tokenId, amount)
+      }
+      .filter(_._2 > 0)
+      .toMap
+
+    if (tokensNeeded.size > 1)
+      throw new Exception("Optimization not supported with multiple tokens")
+
+    val tokenIdNeeded = tokensNeeded.head._1
+    val tokenQtyNeeded = tokensNeeded.head._2
+
+    val sortedInputsByTokens = inputBoxes.sortBy(box =>
+      -box.tokens.find(_.id == tokenIdNeeded).map(_.value).getOrElse(BigInt(0))
+    )
+    var accumTokenAmount: BigInt = 0
+    var accumNanoErgAmount: BigInt = 0
+    var accumTokenBoxes: Array[InputBox] = Array()
+    val accumToken = sortedInputsByTokens.map { input =>
+      accumTokenAmount += input.tokens
+        .find(_.id == tokenIdNeeded)
+        .map(_.value)
+        .getOrElse(BigInt(0))
+      accumNanoErgAmount += input.amount
+      accumTokenBoxes +:= input
+      (accumTokenAmount, accumNanoErgAmount, accumTokenBoxes)
+    }
+    val (_, nanoErgsInBoxes, selectedBoxes) = accumToken
+      .find {
+        case (amount, _, _) => amount >= tokenQtyNeeded
+      }
+      .getOrElse(throw new Exception("Insufficient tokens in inputs"))
+
+    val nanoErgsStillNeeded: BigInt =
+      (amountTotal - nanoErgsInBoxes - additionalInput
+        .map(_.amount)
+        .getOrElse(0)).max(0)
+    val furtherInputs: Array[InputBox] = if (nanoErgsStillNeeded > 0) {
+      val inputsStillUnselected = inputBoxes.filterNot(selectedBoxes.contains)
+
+      val sortedInputs = inputsStillUnselected.sortBy(-_.amount)
+      var accumAmount: BigInt = 0
+      var accumBoxes: Array[InputBox] = Array()
+      val accum = sortedInputs.map { input =>
+        accumAmount += input.amount
+        accumBoxes +:= input
+        (accumAmount, accumBoxes)
+      }
+      accum
+        .find {
+          case (amount, _) => amount >= nanoErgsStillNeeded
+        }
+        .map(_._2)
+        .getOrElse(inputBoxes)
+    } else Array[InputBox]()
+    (selectedBoxes ++ furtherInputs).toArray
   }
 
 }
