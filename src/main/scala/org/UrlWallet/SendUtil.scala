@@ -155,7 +155,7 @@ class SendUtil(
       case e: java.net.UnknownHostException =>
         throw new Exception("Coin writer unreachable")
       case e: Exception =>
-        // e.printStackTrace
+        e.printStackTrace
         val message =
           if (e.getMessage.startsWith("Cost of transaction"))
             "Please check \"Optimize Inputs\" and retry. If already checked then try reducing the amount"
@@ -196,34 +196,43 @@ class SendUtil(
     if (tokensNeeded.size > 1)
       throw new Exception("Optimization not supported with multiple tokens")
 
-    val tokenIdNeeded = tokensNeeded.head._1
-    val tokenQtyNeeded = tokensNeeded.head._2
-
-    val sortedInputsByTokens = inputBoxes.sortBy(box =>
-      -box.tokens.find(_.id == tokenIdNeeded).map(_.value).getOrElse(BigInt(0))
-    )
-    var accumTokenAmount: BigInt = 0
-    var accumNanoErgAmount: BigInt = 0
-    var accumTokenBoxes: Array[InputBox] = Array()
-    val accumToken = sortedInputsByTokens.map { input =>
-      accumTokenAmount += input.tokens
-        .find(_.id == tokenIdNeeded)
-        .map(_.value)
-        .getOrElse(BigInt(0))
-      accumNanoErgAmount += input.amount
-      accumTokenBoxes +:= input
-      (accumTokenAmount, accumNanoErgAmount, accumTokenBoxes)
-    }
-    val (_, nanoErgsInBoxes, selectedBoxes) = accumToken
-      .find {
-        case (amount, _, _) => amount >= tokenQtyNeeded
-      }
-      .getOrElse(throw new Exception("Insufficient tokens in inputs"))
+    val (nanoErgsInBoxes: BigInt, selectedBoxes: Array[InputBox]) =
+      tokensNeeded.headOption
+        .map { tokenNeeded =>
+          val tokenIdNeeded = tokenNeeded._1
+          val tokenQtyNeeded = tokenNeeded._2
+          val sortedInputsByTokens = inputBoxes.sortBy(box =>
+            -box.tokens
+              .find(_.id == tokenIdNeeded)
+              .map(_.value)
+              .getOrElse(BigInt(0))
+          )
+          var accumTokenAmount: BigInt = 0
+          var accumNanoErgAmount: BigInt = 0
+          var accumTokenBoxes: Array[InputBox] = Array()
+          val accumToken = sortedInputsByTokens.map { input =>
+            accumTokenAmount += input.tokens
+              .find(_.id == tokenIdNeeded)
+              .map(_.value)
+              .getOrElse(BigInt(0))
+            accumNanoErgAmount += input.amount
+            accumTokenBoxes +:= input
+            (accumTokenAmount, accumNanoErgAmount, accumTokenBoxes)
+          }
+          val (_, nanoErgsInBoxes, selectedBoxes: Array[InputBox]) = accumToken
+            .find {
+              case (amount, _, _) => amount >= tokenQtyNeeded
+            }
+            .getOrElse(throw new Exception("Insufficient tokens in inputs"))
+          (nanoErgsInBoxes, selectedBoxes)
+        }
+        .getOrElse((BigInt(0), Array[InputBox]()))
 
     val nanoErgsStillNeeded: BigInt =
       (amountTotal - nanoErgsInBoxes - additionalInput
         .map(_.amount)
         .getOrElse(0)).max(0)
+
     val furtherInputs: Array[InputBox] = if (nanoErgsStillNeeded > 0) {
       val inputsStillUnselected = inputBoxes.filterNot(selectedBoxes.contains)
 
