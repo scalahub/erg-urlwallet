@@ -175,7 +175,7 @@ class SendUtil(
     // 3. tokens from inputBoxes and additionalInput
 
     val tokensNeeded: Map[String, BigInt] = tokens
-      .filter(_._2 > 0)
+      .filter(token => token._2 > 0 && token._1 != "new")
       .groupBy(_._1)
       .map {
         case (tokenId, amounts) => tokenId -> amounts.map(_._2).sum
