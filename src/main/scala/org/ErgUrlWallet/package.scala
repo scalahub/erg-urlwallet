@@ -19,7 +19,7 @@ import scala.{BigInt => ScalaBigInt}
 
 package object ErgUrlWallet {
   def deserialize(hex: String): ErgoValue[_] = {
-    val bytes: Array[Byte] = Hex.decodeHex(hex.toCharArray)
+    val bytes: Array[Byte]         = Hex.decodeHex(hex.toCharArray)
     val value: Values.Value[SType] = ValueSerializer.deserialize(bytes)
     value match {
       case ConstantNode(g, SGroupElement)     => ErgoValue.of(g.asInstanceOf[GroupElement])
@@ -34,10 +34,10 @@ package object ErgUrlWallet {
   implicit def bytesToString(bytes: Array[Byte]) = Hex.encodeHexString(bytes)
 
   private val ErgoGroupElementType: ErgoType[GroupElement] = ErgoType.groupElementType
-  private val ErgoIntType = ErgoType.integerType()
-  private val ErgoBigIntType = ErgoType.bigIntType()
-  private val ErgoLongType = ErgoType.longType()
-  private val ErgoCollByteType: ErgoType[Coll[lang.Byte]] = ErgoType.collType(ErgoType.byteType())
+  private val ErgoIntType                                  = ErgoType.integerType()
+  private val ErgoBigIntType                               = ErgoType.bigIntType()
+  private val ErgoLongType                                 = ErgoType.longType()
+  private val ErgoCollByteType: ErgoType[Coll[lang.Byte]]  = ErgoType.collType(ErgoType.byteType())
 
   def serialize(ergoValue: ErgoValue[_]): String = {
     ergoValue.getType match {
@@ -50,20 +50,30 @@ package object ErgUrlWallet {
     }
   }
 
-  case class ErgInputBox(id: String, amount: ScalaBigInt, registers: Map[String, String], tokens: Seq[ErgToken], creationHeight: Int, address: String, spendingTxId: Option[String]) extends InputBox {
+  case class ErgInputBox(
+      id: String,
+      amount: ScalaBigInt,
+      registers: Map[String, String],
+      tokens: Seq[ErgToken],
+      creationHeight: Int,
+      address: String,
+      spendingTxId: Option[String]
+  ) extends InputBox {
     val isSpent = spendingTxId.isDefined
-    def getRegistersAsSeq: Seq[ErgoValue[_]] = registers.toSeq.sortBy(_._1).map(_._2).map { hex =>
-      deserialize(hex)
-    }
+    def getRegistersAsSeq: Seq[ErgoValue[_]] =
+      registers.toSeq.sortBy(_._1).map(_._2).map { hex =>
+        deserialize(hex)
+      }
   }
 
   case class ErgToken(id: String, value: ScalaBigInt) extends CoinToken {
     def toErgoToken = new AppKitToken(id, value.toLong)
-    def +(that: CoinToken) = that match {
-      case ErgToken(`id`, thatValue) => ErgToken(id, value + thatValue)
-      case ErgToken(_, _)            => throw new Exception("Cannot add different token ids")
-      case any                       => throw new Exception(s"Unknown CoinToken ${any.getClass.getCanonicalName}")
-    }
+    def +(that: CoinToken) =
+      that match {
+        case ErgToken(`id`, thatValue) => ErgToken(id, value + thatValue)
+        case ErgToken(_, _)            => throw new Exception("Cannot add different token ids")
+        case any                       => throw new Exception(s"Unknown CoinToken ${any.getClass.getCanonicalName}")
+      }
   }
 
   case class ErgOutputBox(address: String, regs: Seq[ErgoValue[_]], value: ScalaBigInt, tokens: Seq[ErgToken]) extends OutputBox
@@ -78,7 +88,8 @@ package object ErgUrlWallet {
     val g: GroupElement = CryptoConstants.dlogGroup.generator
     override def getAddress: String = {
       val gZ: GroupElement = g.exp(bigInt.bigInteger)
-      Client.usingClient { implicit ctx =>
+
+      Client.clients.head.usingContext { implicit ctx =>
         val contract = ctx.compileContract(
           ConstantsBuilder
             .create()

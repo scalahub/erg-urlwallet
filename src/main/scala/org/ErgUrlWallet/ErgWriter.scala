@@ -1,9 +1,15 @@
 package org.ErgUrlWallet
 
+import org.ErgUrlWallet.utils.Nodes
 import org.UrlWallet.{CoinWriter, Curl}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object ErgWriter extends CoinWriter {
   override def pushTx(jsonTx: String): Unit = {
-    Curl.post("http://88.198.13.202:9052/transactions", jsonTx)
+    Nodes.urls.foreach { url =>
+      Future(Curl.post(s"http://$url/transactions", jsonTx))
+    }
   }
 }

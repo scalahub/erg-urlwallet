@@ -28,7 +28,7 @@ object ErgUtil extends CoinUtil {
   val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
 
   def getAddressFromString(address: String): Try[ErgoAddress] = {
-    Client.usingClient { ctx =>
+    Client.clients.head.usingContext { ctx =>
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       addressEncoder.fromString(address)
@@ -36,7 +36,7 @@ object ErgUtil extends CoinUtil {
   }
 
   override def isAddressValid(address: String): Boolean = {
-    Client.usingClient { ctx =>
+    Client.clients.head.usingContext { ctx =>
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       try {
@@ -71,7 +71,7 @@ object ErgUtil extends CoinUtil {
 
     val tokens: Seq[ErgToken] = if (token > 0) {
       def ergInputBox: ErgInputBox = inputBoxes(0).asInstanceOf[ErgInputBox]
-      val actualTokenId = if (tokenId == "new") ergInputBox.id else tokenId
+      val actualTokenId            = if (tokenId == "new") ergInputBox.id else tokenId
       Seq(ErgToken(actualTokenId, token))
     } else Nil
     ErgOutputBox(address, registers, amount, tokens)
@@ -92,7 +92,9 @@ object ErgUtil extends CoinUtil {
       coinKeys: Array[CoinPrivateKey]
   ): CoinSignedTx = {
     if (inputBoxes.isEmpty) throw new Exception("No funds available")
-    Client.usingClient { implicit ctx =>
+
+    val idx = scala.util.Random.nextInt(Client.clients.length)
+    Client.clients(idx).usingContext { implicit ctx =>
       val txB = ctx.newTxBuilder()
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
@@ -126,7 +128,7 @@ object ErgUtil extends CoinUtil {
           )
       }
 
-      val totalIn = ergInputBoxes.map(_.amount).sum
+      val totalIn  = ergInputBoxes.map(_.amount).sum
       val totalOut = outBoxes.map(_.getValue).sum + txFee
 
       val change = totalIn - totalOut
@@ -184,9 +186,7 @@ object ErgUtil extends CoinUtil {
 
       val toBurn: Seq[ErgoToken] =
         if (allowTokenBurn && changeTokens.nonEmpty && actualChange == 0)
-          changeTokens.map(changeToken =>
-            new ErgoToken(changeToken.id, changeToken.value.toLong)
-          )
+          changeTokens.map(changeToken => new ErgoToken(changeToken.id, changeToken.value.toLong))
         else Nil
 
       val (optChangeOutBox, optChangeErgOutputBox): (
@@ -217,40 +217,38 @@ object ErgUtil extends CoinUtil {
           .tokensToBurn(toBurn: _*)
       val txToSign: UnsignedTransaction = txBuilder.build()
 
-      Client.usingClient { ctx =>
-        val proverBuilder = ctx.newProverBuilder()
-        coinKeys.foreach {
-          case ErgPrivateKey(bigInt) =>
-            proverBuilder.withDLogSecret(bigInt.bigInteger)
-          case any =>
-            throw new Exception(
-              s"Unsupported private key type: ${any.getClass()}"
-            )
-        }
-        val prover = proverBuilder.build()
-        val signedTx: SignedTransaction = prover.sign(txToSign)
-
-        ctx.sendTransaction(signedTx)
-        println("pushingTx " + signedTx.getId)
-
-        val ergoTransactionOutputs
-            : java.util.List[org.ergoplatform.appkit.InputBox] =
-          signedTx.getOutputsToSpend
-
-        val x: Option[(ErgOutputBox, AppkitInputBox)] =
-          optChangeErgOutputBox.map { changeErgOutputBox =>
-            val changeErgoTransactionOutput: org.ergoplatform.appkit.InputBox =
-              ergoTransactionOutputs.get(ergOutputBoxes.length)
-            (changeErgOutputBox, changeErgoTransactionOutput)
-          }
-        SentCache.addTx(
-          changeAddress,
-          ergInputBoxes.map(_.id),
-          ctx.getHeight,
-          x
-        )
-        ErgSignedTx(signedTx)
+      val proverBuilder = ctx.newProverBuilder()
+      coinKeys.foreach {
+        case ErgPrivateKey(bigInt) =>
+          proverBuilder.withDLogSecret(bigInt.bigInteger)
+        case any =>
+          throw new Exception(
+            s"Unsupported private key type: ${any.getClass()}"
+          )
       }
+      val prover                      = proverBuilder.build()
+      val signedTx: SignedTransaction = prover.sign(txToSign)
+
+      ctx.sendTransaction(signedTx)
+      println("pushingTx " + signedTx.getId)
+
+      val ergoTransactionOutputs: java.util.List[org.ergoplatform.appkit.InputBox] =
+        signedTx.getOutputsToSpend
+
+      val x: Option[(ErgOutputBox, AppkitInputBox)] =
+        optChangeErgOutputBox.map { changeErgOutputBox =>
+          val changeErgoTransactionOutput: org.ergoplatform.appkit.InputBox =
+            ergoTransactionOutputs.get(ergOutputBoxes.length)
+          (changeErgOutputBox, changeErgoTransactionOutput)
+        }
+      SentCache.addTx(
+        changeAddress,
+        ergInputBoxes.map(_.id),
+        ctx.getHeight,
+        x
+      )
+      ErgSignedTx(signedTx)
+
     }
   }
 

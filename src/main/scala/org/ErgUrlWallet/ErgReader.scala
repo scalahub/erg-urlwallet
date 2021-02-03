@@ -6,19 +6,19 @@ object ErgReader extends CoinReader {
 
   import io.circe.Json
 
-  // private val baseUrl = "https://new-explorer.ergoplatform.com"
-  private val baseUrl = "https://api.ergoplatform.com"
-  //  private val unspentUrl = s"$baseUrl/transactions/boxes/byAddress/unspent/"
-  private val unspentUrl =
-    s"$baseUrl/api/v0/transactions/boxes/byAddress/unspent/"
-  private val boxUrl = s"$baseUrl/transactions/boxes/"
+  // private val baseUrl    = "https://new-explorer.ergoplatform.com"
+  // private val unspentUrl = s"$baseUrl/transactions/boxes/byAddress/unspent/"
 
-  override def getBoxById(boxId: String) = {
+  private val baseUrl    = "https://api.ergoplatform.com"
+  private val unspentUrl = s"$baseUrl/api/v0/transactions/boxes/byAddress/unspent/"
+  private val boxUrl     = s"$baseUrl/transactions/boxes/"
+
+  override def getBoxById(boxId: String): ErgInputBox = {
     getUtxoBoxFromJson(Curl.get(boxUrl + boxId))
   }
 
   private def getUtxoBoxFromJson(j: Json) = {
-    val id = getId(j)
+    val id    = getId(j)
     val value = (j \\ "value").map(v => v.asNumber.get).apply(0)
     val creationHeight =
       (j \\ "creationHeight").map(v => v.asNumber.get).apply(0)
@@ -39,7 +39,7 @@ object ErgReader extends CoinReader {
         .getOrElse(Nil)
     }.toMap
 
-    val address = (j \\ "address").map(v => v.asString.get).apply(0)
+    val address      = (j \\ "address").map(v => v.asString.get).apply(0)
     val spendingTxId = (j \\ "spentTransactionId").map(v => v.asString).apply(0)
     ErgInputBox(
       id,
@@ -71,7 +71,7 @@ object ErgReader extends CoinReader {
     ).toSet
 
     val explorerIds: Set[String] = receivedBoxesFromExplorer.map(_.id)
-    val memoryIds: Set[String] = receivedBoxesFromMemory.map(_.id)
+    val memoryIds: Set[String]   = receivedBoxesFromMemory.map(_.id)
 
     val allReceivedIds: Set[String] = explorerIds ++ memoryIds
 
