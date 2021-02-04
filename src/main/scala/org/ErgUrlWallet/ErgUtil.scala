@@ -28,7 +28,7 @@ object ErgUtil extends CoinUtil {
   val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
 
   def getAddressFromString(address: String): Try[ErgoAddress] = {
-    Client.clients.head.usingContext { ctx =>
+    Client.usingContext { ctx =>
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       addressEncoder.fromString(address)
@@ -36,7 +36,7 @@ object ErgUtil extends CoinUtil {
   }
 
   override def isAddressValid(address: String): Boolean = {
-    Client.clients.head.usingContext { ctx =>
+    Client.usingContext { ctx =>
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)
       try {
@@ -93,8 +93,7 @@ object ErgUtil extends CoinUtil {
   ): CoinSignedTx = {
     if (inputBoxes.isEmpty) throw new Exception("No funds available")
 
-    val idx = scala.util.Random.nextInt(Client.clients.length)
-    Client.clients(idx).usingContext { implicit ctx =>
+    Client.usingContext { implicit ctx =>
       val txB = ctx.newTxBuilder()
       val addressEncoder =
         new ErgoAddressEncoder(ctx.getNetworkType.networkPrefix)

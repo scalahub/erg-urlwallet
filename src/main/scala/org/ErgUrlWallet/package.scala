@@ -89,7 +89,7 @@ package object ErgUrlWallet {
     override def getAddress: String = {
       val gZ: GroupElement = g.exp(bigInt.bigInteger)
 
-      Client.clients.head.usingContext { implicit ctx =>
+      Client.usingContext { implicit ctx =>
         val contract = ctx.compileContract(
           ConstantsBuilder
             .create()
