@@ -7,7 +7,7 @@ package object UrlWallet {
     val decimals: Int // 8 for BTC, 18 for ETH
     val minFee: Long
     val symbol: String // BTC/LTC/BTC, etc
-    val name: String // Bitcoin etc
+    val name: String   // Bitcoin etc
     val minAmt: Long
     val defaultAmt: Long
 
@@ -21,23 +21,38 @@ package object UrlWallet {
       * @param copyRegsFromInput
       * @return
       */
-    def getOutputBox(address: String, amount: BigInt, inputBoxes: Seq[InputBox], token: BigInt, tokenId: String, copyRegs: Option[InputBox]): OutputBox
+    def getOutputBox(
+        address: String,
+        amount: BigInt,
+        inputBoxes: Seq[InputBox],
+        token: BigInt,
+        tokenId: String,
+        copyRegs: Option[InputBox]
+    ): OutputBox
     def isAddressValid(address: String): Boolean
     def getPrivateKey(walletImportFormat: String): CoinPrivateKey
     def getKeyFromInt(bigInt: BigInt): CoinPrivateKey
 
     /* coinKeys must match the inputs in coinTx (both size of array and sequence of elements) */
-    def sendTx(src: Array[InputBox], dest: Array[OutputBox], txFee: Long, changeAddress: String, allowTokenBurn: Boolean, coinKeys: Array[CoinPrivateKey]): CoinSignedTx
+    def sendTx(
+        src: Array[InputBox],
+        dest: Array[OutputBox],
+        txFee: Long,
+        changeAddress: String,
+        allowTokenBurn: Boolean,
+        coinKeys: Array[CoinPrivateKey]
+    ): CoinSignedTx
   }
 
   trait OutputBox
 
   trait CoinReader {
-    type IsConfirmed = Boolean // Boolean tells if any are awaiting confirmations. Need this for some wallets (including Ergo) whose explorer doesn't yet support unconfirmed boxes
+    type IsConfirmed =
+      Boolean // Boolean tells if any are awaiting confirmations. Need this for some wallets (including Ergo) whose explorer doesn't yet support unconfirmed boxes
     def getUnspentBoxes(address: String): (Array[InputBox], IsConfirmed)
     def getBalance(address: String): CoinBalance = {
       val (unspentBoxes, isConfirmed) = getUnspentBoxes(address)
-      val value = unspentBoxes.map(_.amount).sum
+      val value                       = unspentBoxes.map(_.amount).sum
       val tokens = unspentBoxes
         .flatMap(_.tokens)
         .groupBy(_.id)

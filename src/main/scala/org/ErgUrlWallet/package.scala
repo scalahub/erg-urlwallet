@@ -1,7 +1,5 @@
 package org
 
-import java.lang
-
 import org.ErgUrlWallet.utils.Client
 import org.UrlWallet._
 import org.apache.commons.codec.binary.Hex
@@ -37,7 +35,7 @@ package object ErgUrlWallet {
   private val ErgoIntType                                  = ErgoType.integerType()
   private val ErgoBigIntType                               = ErgoType.bigIntType()
   private val ErgoLongType                                 = ErgoType.longType()
-  private val ErgoCollByteType: ErgoType[Coll[lang.Byte]]  = ErgoType.collType(ErgoType.byteType())
+  private val ErgoCollByteType: ErgoType[Coll[Byte]]       = ErgoType.collType(ErgoType.byteType())
 
   def serialize(ergoValue: ErgoValue[_]): String = {
     ergoValue.getType match {
