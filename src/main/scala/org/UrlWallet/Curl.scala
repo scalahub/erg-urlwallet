@@ -11,7 +11,8 @@ object Curl {
   import io.circe._, io.circe.parser._
   val requestProperties = Map(
 //    "User-Agent" -> "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-    "User-Agent" -> "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1"
+    "User-Agent" -> "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1",
+    "Accept" -> "application/json"
   )
 
   private def is2Str(is:InputStream) = {
@@ -21,7 +22,7 @@ object Curl {
     }
   }
 
-  def getOrError(url:String) = {
+  def getOrError(url:String): Either[Throwable, Option[Json]] = {
     Try {
       val connection = new URL(url).openConnection
       requestProperties.foreach{case (name, value) => connection.setRequestProperty(name, value)}
@@ -35,7 +36,7 @@ object Curl {
     }
   }
 
-  def get(url:String) = {
+  def get(url:String): Json = {
     getOrError(url) match {
       case Right(Some(json)) => json
       case Right(None) => throw new Exception("Explorer returned error 404")
@@ -43,7 +44,7 @@ object Curl {
     }
   }
 
-  def post(url:String, body:String) = {
+  def post(url:String, body:String): Either[Throwable, Option[Json]] = {
     Try {
       val connection = new URL(url).openConnection
       requestProperties.foreach{case (name, value) => connection.setRequestProperty(name, value)}
