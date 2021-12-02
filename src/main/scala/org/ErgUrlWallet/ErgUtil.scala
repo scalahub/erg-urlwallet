@@ -219,7 +219,7 @@ object ErgUtil extends CoinUtil {
       val proverBuilder = ctx.newProverBuilder()
       coinKeys.foreach {
         case ErgPrivateKey(bigInt) =>
-          proverBuilder.withDLogSecret(bigInt.bigInteger)
+          Try(proverBuilder.withDLogSecret(bigInt.bigInteger)).getOrElse(proverBuilder)
         case any =>
           throw new Exception(
             s"Unsupported private key type: ${any.getClass()}"
