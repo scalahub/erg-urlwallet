@@ -27,12 +27,14 @@ object SentCache {
     override val dbuser: String       = "user"
     override val dbpass: String       = "pass"
     override val dbhost: String       = ""    // will be ignored
-    override val dbms: String         = "h2"  // will be ignored
+    override val dbms: String         = "h2server"
     override val connTimeOut: Max     = 10000 // will be ignored
     override val usePool: Boolean     = true  // will be ignored
     override val configSource: String = "code"
 
     override def url = s"jdbc:h2:mem:$dbname;DB_CLOSE_DELAY=-1"
+    println("Initializing memory db")
+    init
   }
 
   val spentBoxTable            = Tab.withName("spent").withCols(addressCol, boxIdCol, timeCol).withPriKey(boxIdCol)
