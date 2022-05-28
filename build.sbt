@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
   "net.glxn"                  % "qrgen"                   % "1.4",
   "io.circe"                 %% "circe-parser"            % "0.13.0",
   "org.ergoplatform"         %% "ergo-appkit"             % "4.0.3",
-  "io.github.scalahub"       %% "scaladb"                 % "1.0"
+  "io.github.scalahub"       %% "memdb"                   % "1.0"
 )
 
 resolvers ++= Seq(

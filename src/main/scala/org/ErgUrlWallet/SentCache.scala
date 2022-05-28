@@ -1,8 +1,8 @@
 package org.ErgUrlWallet
 
-import org.sh.db.ScalaDB._
-import org.sh.db.config.TraitDBConfig
-import org.sh.db.core.DataStructures._
+import org.memdb.db.ScalaDB._
+import org.memdb.db.config.DBConfig
+import org.memdb.db.core.DataStructures._
 import org.ergoplatform.appkit.{ErgoValue, InputBox => AppkitInputBox}
 
 import scala.util.Try
@@ -22,19 +22,10 @@ object SentCache {
   val timeCol           = Col("time", ULONG)
   val feeCol            = Col("fee", BIGINT)
 
-  implicit val config = new TraitDBConfig {
-    override val dbname: String       = "memdb"
-    override val dbuser: String       = "user"
-    override val dbpass: String       = "pass"
-    override val dbhost: String       = ""    // will be ignored
-    override val dbms: String         = "h2server"
-    override val connTimeOut: Max     = 10000 // will be ignored
-    override val usePool: Boolean     = true  // will be ignored
-    override val configSource: String = "code"
-
-    override def url = s"jdbc:h2:mem:$dbname;DB_CLOSE_DELAY=-1"
-    println("Initializing memory db")
-    init
+  implicit val config = new DBConfig {
+    override val dbname: String = "memdb"
+    override val dbuser: String = "user"
+    override val dbpass: String = "pass"
   }
 
   val spentBoxTable            = Tab.withName("spent").withCols(addressCol, boxIdCol, timeCol).withPriKey(boxIdCol)
