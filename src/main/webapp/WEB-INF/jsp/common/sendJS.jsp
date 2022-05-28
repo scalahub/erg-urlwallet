@@ -5,25 +5,29 @@
                 document.getElementById("sendresult").innerHTML = validation;
                 return;
             }
-            var xmlHttpReq = false;
-            var self = this;
-            // Mozilla/Safari
-            if (window.XMLHttpRequest) {
-                self.xmlHttpReq = new XMLHttpRequest();
-            }
-            // IE
-            else if (window.ActiveXObject) {
-                self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            document.getElementById("sendresult").innerHTML = '<img height="20" src="/static/common/CircularProcessing.gif" alt="processing"></img>'; //'processing...';
-            self.xmlHttpReq.open('POST', strURL, true);
-            self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            self.xmlHttpReq.onreadystatechange = function() {
-                if (self.xmlHttpReq.readyState == 4) {
-                    updateSend(self.xmlHttpReq.responseText);
+            if (confirm("Are you sure you want to proceed?")) {
+                var xmlHttpReq = false;
+                var self = this;
+                // Mozilla/Safari
+                if (window.XMLHttpRequest) {
+                    self.xmlHttpReq = new XMLHttpRequest();
                 }
+                // IE
+                else if (window.ActiveXObject) {
+                    self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                document.getElementById("sendresult").innerHTML = '<img height="20" src="/static/common/CircularProcessing.gif" alt="processing"></img>'; //'processing...';
+                self.xmlHttpReq.open('POST', strURL, true);
+                self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                self.xmlHttpReq.onreadystatechange = function() {
+                    if (self.xmlHttpReq.readyState == 4) {
+                        updateSend(self.xmlHttpReq.responseText);
+                    }
+                }
+                self.xmlHttpReq.send(getquerystringSend());
+            } else {
+                return;
             }
-            self.xmlHttpReq.send(getquerystringSend());
         }
         function validateInputSend(){
             var result = 'ok';
