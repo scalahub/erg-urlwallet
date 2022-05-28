@@ -12,9 +12,8 @@ libraryDependencies ++= Seq(
   "javax.servlet"             % "servlet-api"             % "2.5" % "provided",
   "net.glxn"                  % "qrgen"                   % "1.4",
   "io.circe"                 %% "circe-parser"            % "0.13.0",
-  "net.snaq"                  % "dbpool"                  % "7.0.1",
   "org.ergoplatform"         %% "ergo-appkit"             % "4.0.3",
-  "com.h2database"            % "h2"                      % "1.4.199"
+  "io.github.scalahub"       %% "scaladb"                 % "1.0"
 )
 
 resolvers ++= Seq(
