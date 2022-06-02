@@ -92,7 +92,7 @@ object SentCache {
             val hex     = serialize(ergoValue)
             val regName = "R" + index + 4
             createdBoxRegistersTable.insert(boxId, regName, hex)
-          case _ => ???
+          case (_, index) => throw new Exception(s"An unknown type was encountered in Register $index")
         }
         e.tokens.zipWithIndex.foreach {
           case (token, index) =>

@@ -44,7 +44,7 @@ package object ErgUrlWallet {
       case ErgoBigIntType       => ValueSerializer.serialize(ergoValue.asInstanceOf[ErgoValue[BigInt]].getValue)
       case ErgoLongType         => ValueSerializer.serialize(ergoValue.asInstanceOf[ErgoValue[Long]].getValue)
       case ErgoCollByteType     => ValueSerializer.serialize(ergoValue.asInstanceOf[ErgoValue[Coll[Byte]]].getValue.toArray)
-      case _                    => ???
+      case any                  => throw new Exception("Unsupported type " + any)
     }
   }
 
