@@ -77,8 +77,7 @@ class SendUtil(
 
       val noInput: Option[InputBox] = None
 
-      val recipientAddressesAmountsCopyFrom
-          : Array[(String, String, Long, String, Option[InputBox])] =
+      val recipientAddressesAmountsCopyFrom: Array[(String, String, Long, String, Option[InputBox])] =
         recipientAddressesAmounts.map {
           case (address, amount, tokenAmount, tokenId) =>
             (address, amount, tokenAmount, tokenId, noInput)
@@ -94,20 +93,18 @@ class SendUtil(
 
       val copyBoxRegistersTo: Option[(InputBox, Int)] = for {
         outputIndex <- copyRegistersTo
-        box <- additionalInput
+        box         <- additionalInput
       } yield (box, outputIndex)
 
       copyBoxRegistersTo.foreach {
-        case (additionalInput, outputIndex)
-            if outputIndex < recipientAddressesAmountsCopyFrom.size =>
+        case (additionalInput, outputIndex) if outputIndex < recipientAddressesAmountsCopyFrom.size =>
           val (address, amount, token, tokenId, _) =
             recipientAddressesAmountsCopyFrom(outputIndex)
           if (address != additionalInput.address)
             throw new Exception(
               s"Address of output ${outputIndex} does not match additional input address"
             )
-          recipientAddressesAmountsCopyFrom(outputIndex) =
-            (address, amount, token, tokenId, Some(additionalInput))
+          recipientAddressesAmountsCopyFrom(outputIndex) = (address, amount, token, tokenId, Some(additionalInput))
         case (_, outputIndex) =>
           throw new Exception(
             s"No output at index $outputIndex for copying additional input"
@@ -191,7 +188,6 @@ class SendUtil(
         case (tokenId, amount) => (tokenId, amount)
       }
       .filter(_._2 > 0)
-      .toMap
 
     if (tokensNeeded.size > 1)
       throw new Exception("Optimization not supported with multiple tokens")
@@ -199,7 +195,7 @@ class SendUtil(
     val (nanoErgsInBoxes: BigInt, selectedBoxes: Array[InputBox]) =
       tokensNeeded.headOption
         .map { tokenNeeded =>
-          val tokenIdNeeded = tokenNeeded._1
+          val tokenIdNeeded  = tokenNeeded._1
           val tokenQtyNeeded = tokenNeeded._2
           val sortedInputsByTokens = inputBoxes.sortBy(box =>
             -box.tokens
@@ -207,8 +203,8 @@ class SendUtil(
               .map(_.value)
               .getOrElse(BigInt(0))
           )
-          var accumTokenAmount: BigInt = 0
-          var accumNanoErgAmount: BigInt = 0
+          var accumTokenAmount: BigInt         = 0
+          var accumNanoErgAmount: BigInt       = 0
           var accumTokenBoxes: Array[InputBox] = Array()
           val accumToken = sortedInputsByTokens.map { input =>
             accumTokenAmount += input.tokens
@@ -236,8 +232,8 @@ class SendUtil(
     val furtherInputs: Array[InputBox] = if (nanoErgsStillNeeded > 0) {
       val inputsStillUnselected = inputBoxes.filterNot(selectedBoxes.contains)
 
-      val sortedInputs = inputsStillUnselected.sortBy(-_.amount)
-      var accumAmount: BigInt = 0
+      val sortedInputs                = inputsStillUnselected.sortBy(-_.amount)
+      var accumAmount: BigInt         = 0
       var accumBoxes: Array[InputBox] = Array()
       val accum = sortedInputs.map { input =>
         accumAmount += input.amount

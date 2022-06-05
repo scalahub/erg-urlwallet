@@ -10,7 +10,8 @@ object Client {
   }
 }
 class Client(url: String) {
-  private val restApiErgoClient: ErgoClient = RestApiErgoClient.create(url, NetworkType.MAINNET, "")
+  private val restApiErgoClient: ErgoClient =
+    RestApiErgoClient.create(url, NetworkType.MAINNET, "no-api-key", RestApiErgoClient.defaultMainnetExplorerUrl)
   private def usingContext[T](f: BlockchainContext => T): T = {
     restApiErgoClient.execute { ctx =>
       f(ctx)

@@ -7,13 +7,14 @@ updateOptions := updateOptions.value.withLatestSnapshots(false)
 scalaVersion := "2.12.10"
 
 libraryDependencies ++= Seq(
+  "org.ergoplatform"         %% "ergo-appkit"             % "develop-60fd166d-SNAPSHOT",
   "org.scala-lang.modules"   %% "scala-collection-compat" % "2.1.3",
   "org.apache.httpcomponents" % "httpclient"              % "4.3.3",
   "javax.servlet"             % "servlet-api"             % "2.5" % "provided",
   "net.glxn"                  % "qrgen"                   % "1.4",
   "io.circe"                 %% "circe-parser"            % "0.13.0",
-  "org.ergoplatform"         %% "ergo-appkit"             % "4.0.3",
-  "io.github.scalahub"       %% "memdb"                   % "1.0"
+  "io.github.scalahub"       %% "memdb"                   % "1.0",
+  "io.github.ergoplatform"   %% "jde"                     % "1.0"
 )
 
 resolvers ++= Seq(

@@ -18,7 +18,7 @@ package object UrlWallet {
       * @param inputBoxes used only to compute the token Id of a new token (if needed)
       * @param token
       * @param tokenId
-      * @param copyRegsFromInput
+      * @param copyRegs (from input)
       * @return
       */
     def getOutputBox(
@@ -50,6 +50,7 @@ package object UrlWallet {
     type IsConfirmed =
       Boolean // Boolean tells if any are awaiting confirmations. Need this for some wallets (including Ergo) whose explorer doesn't yet support unconfirmed boxes
     def getUnspentBoxes(address: String): (Array[InputBox], IsConfirmed)
+    def getUsd(nanoErgs: BigInt): Option[String]
     def getBalance(address: String): CoinBalance = {
       val (unspentBoxes, isConfirmed) = getUnspentBoxes(address)
       val value                       = unspentBoxes.map(_.amount).sum
@@ -60,7 +61,7 @@ package object UrlWallet {
           case (id, array) => array.reduceLeft(_ + _)
         }
         .toArray
-      CoinBalance(value, tokens, isConfirmed)
+      CoinBalance(value, tokens, isConfirmed, getUsd(value))
     }
     def getBoxById(boxId: String): InputBox
   }
