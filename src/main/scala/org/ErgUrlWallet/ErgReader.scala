@@ -121,6 +121,14 @@ object ErgReader extends CoinReader {
       |      "address": {
       |        "value": "poolAddresses"
       |      },
+      |      "tokens": [
+      |        { 
+      |          "index": 0,
+      |          "id": {
+      |             "value": "oraclePoolNFT" 
+      |          }
+      |        }
+      |      ],
       |      "registers": [
       |        {
       |          "num": "R4",
@@ -141,23 +149,24 @@ object ErgReader extends CoinReader {
   private val explorer = new Explorer
   private val compiler = new JCompiler(explorer)
 
-  private val formatUSDUtil = new FormatUtil(2)
-
-  private var rateUSD: (Long, Option[Long]) = (0, None)      // epochTime at which obtained, and value
-  private val TenMins                       = 10 * 60 * 1000 // millis
+  private var rateUSDWithTimestamp: (Long, Option[Long]) = (0, None)      // epochTime at which obtained, and value
+  private val TenMins                                    = 10 * 60 * 1000 // millis
 
   private def getRate: Option[Long] = {
-    if (rateUSD._1 > (System.currentTimeMillis() - TenMins)) rateUSD._2
+    if (rateUSDWithTimestamp._1 > (System.currentTimeMillis() - TenMins)) rateUSDWithTimestamp._2
     else {
-      val optNanoErgsPerUsd: Option[Long] =
+      val optNanoErgsPerUsd: Option[Long] = {
         compiler.compile(program).returned.find(_.name == "rateUsd").map(_.values.head.asInstanceOf[KioskLong].value)
-      rateUSD = System.currentTimeMillis() -> optNanoErgsPerUsd
+      }
+      rateUSDWithTimestamp = System.currentTimeMillis() -> optNanoErgsPerUsd
       optNanoErgsPerUsd
     }
   }
 
+  private val formatUSDUtil = new FormatUtil(2)
+
   override def getUsd(nanoErgs: BigInt): Option[String] =
     Try {
-      if (nanoErgs > 0) getRate.map(long => formatUSDUtil.formatLongNumber(nanoErgs.toLong * 100 / long)) else None
+      if (nanoErgs > 0) getRate.map(rate => formatUSDUtil.formatLongNumber(nanoErgs.toLong * 100 / rate)) else None
     }.getOrElse(None)
 }
