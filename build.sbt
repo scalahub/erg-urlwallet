@@ -7,7 +7,6 @@ updateOptions := updateOptions.value.withLatestSnapshots(false)
 scalaVersion := "2.12.10"
 
 libraryDependencies ++= Seq(
-  "org.ergoplatform"         %% "ergo-appkit"             % "develop-60fd166d-SNAPSHOT",
   "org.scala-lang.modules"   %% "scala-collection-compat" % "2.1.3",
   "org.apache.httpcomponents" % "httpclient"              % "4.3.3",
   "javax.servlet"             % "servlet-api"             % "2.5" % "provided",

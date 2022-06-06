@@ -158,6 +158,6 @@ object ErgReader extends CoinReader {
 
   override def getUsd(nanoErgs: BigInt): Option[String] =
     Try {
-      getRate.map(long => formatUSDUtil.formatLongNumber(nanoErgs.toLong * 100 / long))
+      if (nanoErgs > 0) getRate.map(long => formatUSDUtil.formatLongNumber(nanoErgs.toLong * 100 / long)) else None
     }.getOrElse(None)
 }
