@@ -34,7 +34,7 @@ The war file can be hosted on any J2EE web server.
 When modifying the wallet, make sure you pay special attention to HTTP referer header and link to external URLs using the above technique. That is, to link to `http://foo.com`, 
 use the link `/go/to?addr=http://foo.com`.
 
-You may want to consider changing the [seed](/blob/master/src/main/scala/org/UrlWallet/wallet/UrlWallet.scala#L42), so a URL in your instance won't be valid on another instance.
+You may want to consider changing the [seed](src/main/scala/org/UrlWallet/wallet/UrlWallet.scala#L89), so a URL in your instance won't be valid on another instance.
 
 ## Software stack
 

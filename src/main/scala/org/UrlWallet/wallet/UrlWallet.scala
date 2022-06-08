@@ -1,4 +1,6 @@
-package org.UrlWallet
+package org.UrlWallet.wallet
+
+import org.UrlWallet.{CoinUtil, FormatUtil, Random, SendUtil}
 
 class UrlWallet(sendUtil: SendUtil, coinUtil: CoinUtil) {
   val formatUtil = new FormatUtil(coinUtil.decimals)

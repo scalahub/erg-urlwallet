@@ -1,4 +1,6 @@
-package org.UrlWallet
+package org.UrlWallet.wallet
+
+import org.UrlWallet.{CoinUtil, FormatUtil, SendUtil}
 
 class KeyWallet(sendUtil: SendUtil, coinUtil: CoinUtil) {
   val formatUtil = new FormatUtil(coinUtil.decimals)
@@ -86,7 +88,7 @@ class KeyWallet(sendUtil: SendUtil, coinUtil: CoinUtil) {
     }
 
   def getRedirectUrl(urlPattern: String) = "/key" + urlPattern
-  def getBigInt = new java.math.BigInteger(256, new java.security.SecureRandom)
-  def getRandomPrivateKey = coinUtil.getKeyFromInt(getBigInt).getPrivateKeyWIF
-  def getAddress(wifKey: String) = coinUtil.getPrivateKey(wifKey).getAddress
+  def getBigInt                          = new java.math.BigInteger(256, new java.security.SecureRandom)
+  def getRandomPrivateKey                = coinUtil.getKeyFromInt(getBigInt).getPrivateKeyWIF
+  def getAddress(wifKey: String)         = coinUtil.getPrivateKey(wifKey).getAddress
 }
