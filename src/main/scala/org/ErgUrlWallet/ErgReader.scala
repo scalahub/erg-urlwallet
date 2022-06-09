@@ -150,10 +150,10 @@ object ErgReader extends CoinReader {
   private val compiler = new JCompiler(explorer)
 
   private var rateUSDWithTimestamp: (Long, Option[Long]) = (0, None)      // epochTime at which obtained, and value
-  private val TenMins                                    = 10 * 60 * 1000 // millis
+  private val OneHour                                    = 60 * 60 * 1000 // millis
 
   private def getRate: Option[Long] = {
-    if (rateUSDWithTimestamp._1 > (System.currentTimeMillis() - TenMins)) rateUSDWithTimestamp._2
+    if (rateUSDWithTimestamp._1 > (System.currentTimeMillis() - OneHour)) rateUSDWithTimestamp._2
     else {
       val optNanoErgsPerUsd: Option[Long] = {
         compiler.compile(program).returned.find(_.name == "rateUsd").map(_.values.head.asInstanceOf[KioskLong].value)
