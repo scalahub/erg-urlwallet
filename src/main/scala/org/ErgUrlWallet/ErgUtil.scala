@@ -25,7 +25,8 @@ object ErgUtil extends CoinUtil {
 
   lazy val defaultAmt: Long = 1000000L
 
-  val browseURL = "https://explorer.ergoplatform.com/en/addresses/"
+  val browseURL      = "https://explorer.ergoplatform.com/en/addresses/"
+  val tokenBrowseURL = "https://explorer.ergoplatform.com/en/token/"
 
   def getAddressFromString(address: String): Try[ErgoAddress] = {
     Client.usingContext { ctx =>

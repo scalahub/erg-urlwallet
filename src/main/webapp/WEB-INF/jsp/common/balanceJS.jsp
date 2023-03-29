@@ -62,8 +62,12 @@
                             var tokenId = tokenArr[0];
                             var tokenAmt = tokenArr[1];
                             window.tokensInAddress[window.tokensInAddress.length] = tokenId;
+                            var urlPrefix = '';
+                            if (tokenId.length == 64) {
+                                urlPrefix = "<a target='_blank' href='/go/to?addr=<%out.print(tokenBrowseURL);%>"+tokenId+"'>"
+                            }
                             tokenBalance += "<div><span><small><small>"+ tokenAmt+"</small></small> </span> <span> <small><small><small>" +
-                            tokenId.substring(0, 10) + "</small></small></small></span></div>";
+                            urlPrefix+tokenId.substring(0, 10)+"</a>" + "</small></small></small></span></div>";
                         }
                     }
 

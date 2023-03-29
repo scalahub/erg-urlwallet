@@ -4,6 +4,7 @@ package object UrlWallet {
 
   trait CoinUtil {
     val browseURL: String
+    val tokenBrowseURL: String
     val decimals: Int // 8 for BTC, 18 for ETH
     val minFee: Long
     val symbol: String // BTC/LTC/BTC, etc
