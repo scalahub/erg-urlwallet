@@ -15,10 +15,11 @@ Then open http://localhost:8080 to open the wallet.
 
 ## Running on a remote server
 
-First compile war file type the following in bash console:
+First compile war file: type the following in bash console:
   
     sbt package
     
+The command will generate the war file and print details of it's location. 
 The war file can be hosted on any J2EE web server. 
 
 ## Important aspects
